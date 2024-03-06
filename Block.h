@@ -29,7 +29,7 @@ private:
 	std::string prev_hash;              // stores hash for previous block
 	std::vector<std::string> data; // current block data
 	std::string nonce;
-} ;
+};
 
 
 
