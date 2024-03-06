@@ -47,15 +47,27 @@ int ProcessServer::Algorithm::Resource_Allocation_Per_Timeslot(const double &res
 {
     double denominator = 0;
     double elements = 0;
+    double dequeuedTransaction = 0;
     for (double index : queuesSet)
     {
         elements = virtualQueues[resourceType] + penltyWeight;
         denominator = alpha*pow(the_weight_of_the_resource(resourceType), alpha)*(actualQueues[index] + penltyWeight*reward);
         long double temp = (elements/denominator) * 1.0;
-        reAllocate[index] = std::sqrt(temp);
+        reAllocate[index] = pow(temp ,(1/(alpha-1)));
+
+
+        dequeuedTransaction = dequeuedTransaction + pow( (the_weight_of_the_resource(resourceType)*the_kth_resource_allocated_to_shard(index,resourceType)), alpha) ;
     }
     return OK;
 }
 
 
+double the_kth_resource_allocated_to_shard(const double& index,const double& resourceType)
+{
+    return OK;
+}
+
 double the_data_amount_processed(double resourceWeight)
+{
+    return OK;
+}
