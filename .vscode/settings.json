@@ -74,6 +74,14 @@
         "variant": "cpp",
         "contract": "cpp",
         "format": "cpp",
-        "stdfloat": "cpp"
+        "stdfloat": "cpp",
+        "shared_mutex": "cpp",
+        "*.inc": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "unordered_set": "cpp",
+        "internet": "cpp",
+        "rope": "cpp",
+        "ranges": "cpp"
     }
 }

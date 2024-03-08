@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PROCESS__SERVER__H
+#define PROCESS__SERVER__H
 
 #include <iostream>
 #include <vector>
@@ -20,9 +21,9 @@ public:
 
         int Resource_Allocation_Per_Timeslot(const double &resourceType,
                                              const std::vector<double> &queuesSet,
-                                             const double &timeslot,
                                              std::vector<double> virtualQueues,
                                              std::vector<double> actualQueues,
+                                             const std::vector<double> &timeslotSet,
                                              const double &penltyWeight,
                                              const double &reward,
                                              const double &alpha,
@@ -31,3 +32,16 @@ public:
 
 private:
 };
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

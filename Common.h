@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <map>
 
 //
 // define log number
@@ -38,6 +38,20 @@ struct block_resouce
 //
 struct block_time
 {
+};
+
+//
+//the struct of Block
+//
+struct Block
+{
+
+};
+
+
+struct shard
+{
+    std::map<std::string, double> resouceAllocateInfo;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,3 +96,10 @@ extern std::vector<block_resouce> resouce_set;      // the # of all types of res
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+int shardNum = 0;
+int SourceNum = 0;
+std::map<int, double> resourceWeightList;
+std::map<int, std::string> resourceNameList;
+std::map<int, shard*> shardAddress;
+std::map<int, long double> dequeuedQueues;
+std::map<int, long double> arrivalQueues;
