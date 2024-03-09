@@ -2,7 +2,10 @@
 // implement Elastic Resource Allocation Against Imbalanced Transaction Assignments
 //
 
-#pragma once
+#ifndef __BLOCK__H_
+#define __BLOCK__H_
+
+
 
 #include <iostream>
 #include <string>
@@ -34,5 +37,5 @@ private:
 
 
 
-
+#endif //__BLOCK__H_H
 
