@@ -1,26 +1,10 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef __COMMON__H
+#define __COMMON__H__
 
-#include <http.h>
-
-
-class Client
-{
-public:
-    Client();
-    ~Client();
-
-    int sendLoginInfo( );
-    int receiveLoginInfo();
-};
+#define OK                     0
+#define ERROR             -1
+#define STABLISH          0
+#define LOGINSUSSESS 0
 
 
-
-
-
-
-
-
-
-
-#endif // COMMON_H
+#endif // __COMMON__H

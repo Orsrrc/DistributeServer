@@ -1,4 +1,7 @@
-#pragma once
+#ifndef COMMON_H
+#define COMMON_H
+
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -103,3 +106,6 @@ std::map<int, std::string> resourceNameList;
 std::map<int, shard*> shardAddress;
 std::map<int, long double> dequeuedQueues;
 std::map<int, long double> arrivalQueues;
+
+
+#endif // COMMON_H

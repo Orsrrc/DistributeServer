@@ -26,7 +26,7 @@ class Ui_LoginDialog
 {
 public:
     QTextEdit *textEdit;
-    QWidget *widget;
+    QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout_2;
     QLabel *label;
@@ -34,29 +34,42 @@ public:
     QVBoxLayout *verticalLayout;
     QTextEdit *input_username;
     QTextEdit *input_password;
-    QWidget *widget1;
+    QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout_2;
+    QSpacerItem *horizontalSpacer_2;
     QPushButton *btn_login;
+    QSpacerItem *horizontalSpacer_4;
+    QPushButton *pushButton;
     QSpacerItem *horizontalSpacer;
     QPushButton *btn_exit;
+    QSpacerItem *horizontalSpacer_3;
 
     void setupUi(QDialog *LoginDialog)
     {
         if (LoginDialog->objectName().isEmpty())
             LoginDialog->setObjectName("LoginDialog");
+        LoginDialog->setWindowModality(Qt::NonModal);
+        LoginDialog->setEnabled(true);
         LoginDialog->resize(584, 283);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(LoginDialog->sizePolicy().hasHeightForWidth());
+        LoginDialog->setSizePolicy(sizePolicy);
+        LoginDialog->setFocusPolicy(Qt::NoFocus);
+        LoginDialog->setContextMenuPolicy(Qt::DefaultContextMenu);
         textEdit = new QTextEdit(LoginDialog);
         textEdit->setObjectName("textEdit");
-        textEdit->setGeometry(QRect(20, 10, 161, 131));
-        widget = new QWidget(LoginDialog);
-        widget->setObjectName("widget");
-        widget->setGeometry(QRect(200, 30, 371, 81));
-        horizontalLayout = new QHBoxLayout(widget);
+        textEdit->setGeometry(QRect(20, 10, 121, 131));
+        layoutWidget = new QWidget(LoginDialog);
+        layoutWidget->setObjectName("layoutWidget");
+        layoutWidget->setGeometry(QRect(170, 10, 381, 131));
+        horizontalLayout = new QHBoxLayout(layoutWidget);
         horizontalLayout->setObjectName("horizontalLayout");
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName("verticalLayout_2");
-        label = new QLabel(widget);
+        label = new QLabel(layoutWidget);
         label->setObjectName("label");
         QFont font;
         font.setPointSize(14);
@@ -66,7 +79,7 @@ public:
 
         verticalLayout_2->addWidget(label);
 
-        label_2 = new QLabel(widget);
+        label_2 = new QLabel(layoutWidget);
         label_2->setObjectName("label_2");
         label_2->setFont(font);
 
@@ -77,12 +90,12 @@ public:
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName("verticalLayout");
-        input_username = new QTextEdit(widget);
+        input_username = new QTextEdit(layoutWidget);
         input_username->setObjectName("input_username");
 
         verticalLayout->addWidget(input_username);
 
-        input_password = new QTextEdit(widget);
+        input_password = new QTextEdit(layoutWidget);
         input_password->setObjectName("input_password");
 
         verticalLayout->addWidget(input_password);
@@ -90,25 +103,42 @@ public:
 
         horizontalLayout->addLayout(verticalLayout);
 
-        widget1 = new QWidget(LoginDialog);
-        widget1->setObjectName("widget1");
-        widget1->setGeometry(QRect(220, 140, 311, 131));
-        horizontalLayout_2 = new QHBoxLayout(widget1);
+        layoutWidget1 = new QWidget(LoginDialog);
+        layoutWidget1->setObjectName("layoutWidget1");
+        layoutWidget1->setGeometry(QRect(0, 200, 581, 81));
+        horizontalLayout_2 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_2->setObjectName("horizontalLayout_2");
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
-        btn_login = new QPushButton(widget1);
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_2);
+
+        btn_login = new QPushButton(layoutWidget1);
         btn_login->setObjectName("btn_login");
 
         horizontalLayout_2->addWidget(btn_login);
+
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_4);
+
+        pushButton = new QPushButton(layoutWidget1);
+        pushButton->setObjectName("pushButton");
+
+        horizontalLayout_2->addWidget(pushButton);
 
         horizontalSpacer = new QSpacerItem(29, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_2->addItem(horizontalSpacer);
 
-        btn_exit = new QPushButton(widget1);
+        btn_exit = new QPushButton(layoutWidget1);
         btn_exit->setObjectName("btn_exit");
 
         horizontalLayout_2->addWidget(btn_exit);
+
+        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_3);
 
 
         retranslateUi(LoginDialog);
@@ -118,10 +148,11 @@ public:
 
     void retranslateUi(QDialog *LoginDialog)
     {
-        LoginDialog->setWindowTitle(QCoreApplication::translate("LoginDialog", "Dialog", nullptr));
+        LoginDialog->setWindowTitle(QCoreApplication::translate("LoginDialog", "Login", nullptr));
         label->setText(QCoreApplication::translate("LoginDialog", "Username:", nullptr));
         label_2->setText(QCoreApplication::translate("LoginDialog", "Password:", nullptr));
         btn_login->setText(QCoreApplication::translate("LoginDialog", "Login", nullptr));
+        pushButton->setText(QCoreApplication::translate("LoginDialog", "PushButton", nullptr));
         btn_exit->setText(QCoreApplication::translate("LoginDialog", "Exit", nullptr));
     } // retranslateUi
 
