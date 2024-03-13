@@ -35,7 +35,6 @@ int ProcessServer::Algorithm::Drift_Plus_Penalty_Resouce_Allocation(const int &r
             return ERROR;
         }
     }
-
     return OK;
 }
 
@@ -61,14 +60,17 @@ int ProcessServer::Algorithm::Resource_Allocation_Per_Timeslot(const int &resour
     {
         // p(i, k) = (V/(alpha*(Weight(k)^alpha)* (Q(i) + RTX*V )))^(1/（alpha-1) )
         elements = virtualQueues[virtualQueuesIndex] + penltyWeight;
-        denominator = alpha * pow(processServer.the_weight_of_the_resource(resourceIndex), alpha) * (actualQueues[actualQueuesIndex] + penltyWeight * reward);
+        denominator = alpha * std::pow(processServer.the_weight_of_the_resource(resourceIndex), alpha) * (actualQueues[actualQueuesIndex] + penltyWeight * reward);
+
+
+
         long double temp = (elements / denominator) * 1.0;
         processServer.the_kth_resource_allocated_to_shard(processServer.the_kth_resource_name(resourceIndex),
                                                            processServer.the_address_of_the_ith_shard(shardIndex),
-                                                           pow(temp, (1 / (alpha - 1))));
+                                                           std::pow(temp, (1 / (alpha - 1))));
 
         // B(i) = B(i) + (Weight(k) * p(i, k))^alpha
-        processServer.the_dequeued_transaction_of_queue(i, processServer.the_dequeued_transaction_of_queue(i) + pow((processServer.the_weight_of_the_resource(resourceIndex) * processServer.the_kth_resource_allocated_to_shard(processServer.the_kth_resource_name(resourceIndex),
+        processServer.the_dequeued_transaction_of_queue(i, processServer.the_dequeued_transaction_of_queue(i) + std::pow((processServer.the_weight_of_the_resource(resourceIndex) * processServer.the_kth_resource_allocated_to_shard(processServer.the_kth_resource_name(resourceIndex),
                                                                                                                                                                          processServer.the_address_of_the_ith_shard(shardIndex))),
                                                                                         alpha));
 

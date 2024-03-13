@@ -42,7 +42,6 @@ public:
         std::string injectData); // data injection in certain block of chain
 
 private:
-    std::vector<std::unique_ptr<Block>> blockchain; // vector that is the blockchain
     Block* previous;
     Block* head;
 };

@@ -4,14 +4,14 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include "../Common.h"
+#include "../Common.hpp"
 
 class ProcessServer
 {
 public:
-    shard *the_address_of_the_ith_shard(int i)
+    shard *the_address_of_the_ith_shard(const int& i)
     {
-        std::map<int, shard *>::iterator iterator = shardAddress.find(i);
+        std::map<int, shard*>::iterator iterator = shardAddress.find(i);
         return iterator->second;
     }
 
