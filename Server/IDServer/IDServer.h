@@ -1,7 +1,8 @@
 
 #include <string>
 #include <openssl/rand.h>
-#include "../Common.h"
+#include "../Common.hpp"
+#include "../Network.hpp"
 
 class IDServer
 {

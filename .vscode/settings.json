@@ -83,6 +83,15 @@
         "internet": "cpp",
         "rope": "cpp",
         "ranges": "cpp",
-        "forward_list": "cpp"
-    }
+        "forward_list": "cpp",
+        "pr47333.C": "cpp",
+        "cfenv": "cpp"
+    },
+    "C_Cpp.default.includePath": [
+
+    ],
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.cppStandard": "c++11",
+    "C_Cpp.default.intelliSenseMode": ""
 }

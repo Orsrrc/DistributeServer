@@ -11,9 +11,12 @@
 //
 // define log number
 //
-#define OK 0
-#define ERROR -1
-#define STABLISH 0
+#define OK           0
+#define ERROR       -1
+#define STABLISH     0
+#define SERVER_PORT 9800
+#define PROTOCOL_TCP 0
+#define PROTOCOL_UDP 1
 
 ////////////////////////////////GLOBAL////////////////////////////////////////////////////////////////////////////
 
