@@ -7,13 +7,17 @@
 #include <map>
 #include <chrono>
 #include <ctime>
-
+#include <openssl/sha.h>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <sstream>
 //
 // define log number
 //
-#define OK           0
-#define ERROR       -1
-#define STABLISH     0
+#define OK 0
+#define ERROR -1
+#define STABLISH 0
 #define SERVER_PORT 9800
 #define PROTOCOL_TCP 0
 #define PROTOCOL_UDP 1
@@ -27,12 +31,41 @@ int SourceNum = 0;
 
 ///////////////////////////////////GLOBAL FUNCTION///////////////////////////////////////////////////////////////
 
-int get_current_time()
+std::string get_current_time()
 {
     auto now = std::chrono::system_clock::now();
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-    std::cout << "Current time: " << std::ctime(&now_time);
-    return 0;
+    std::string time = std::ctime(&now_time);
+    return time;
+}
+
+std::string generateRandomString(int length)
+{
+    const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[]|;:,.<>?";
+    const int charsetLength = charset.length();
+    std::string result;
+    srand(time(0)); // Seed the random number generator
+    for (int i = 0; i < length; ++i)
+    {
+        result += charset[rand() % charsetLength];
+    }
+
+    return result;
+}
+
+std::string SHA256(const std::string &input)
+{
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, input.c_str(), input.size());
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_Final(hash, &sha256);
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    return ss.str();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
