@@ -21,12 +21,11 @@ Metadata: <Optional additional information>
 */
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 class transaction
 {
     public:
     transaction(IPAddress* senderAddress,IPAddress* recipientAddress, double fee,  std::string signature, std::string metaData)
-    :ID(SHA256(generateRandomString(( rand() + 100) % 10))),
+    :ID(SHA256(generateRandomString())),
     TimeStamp(get_current_time()),
     SenderAddress(senderAddress),
     RecipientAddress(recipientAddress),
@@ -36,8 +35,6 @@ class transaction
     {
         ;
     }
-
-
     ~transaction();
     private:
     std::string ID;

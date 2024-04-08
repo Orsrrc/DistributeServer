@@ -39,7 +39,7 @@ std::string get_current_time()
     return time;
 }
 
-std::string generateRandomString(int length)
+std::string generateRandomString(int length = ((rand() + 100) % 10))
 {
     const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}[]|;:,.<>?";
     const int charsetLength = charset.length();
@@ -53,6 +53,19 @@ std::string generateRandomString(int length)
     return result;
 }
 
+std::string generateRandomDigit(int length = ((rand() + 100) % 10))
+{
+    const std::string charset = "0123456789";
+    const int charsetLength = charset.length();
+    std::string result;
+    srand(time(0)); // Seed the random number generator
+    for (int i = 0; i < length; ++i)
+    {
+        result += charset[rand() % charsetLength];
+    }
+}
+
+// how to compel :g++ -o main main.cpp -lssl -lcrypto
 std::string SHA256(const std::string &input)
 {
     SHA256_CTX sha256;

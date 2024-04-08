@@ -1,16 +1,19 @@
-#ifndef __NETWORK__H_
-#define __NETWORK__H_
+#ifndef __NETWORK__HPP_
+#define __NETWORK__HPP_
 
-// UDP protocol server
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <cstring>
 #include <iostream>
 #include <stdio.h>
 #include "Common.hpp"
+#include <unistd.h>
+#include <net/if.h>
+#include <ifaddrs.h>
+
+
 
 class TcpSocket
 {
@@ -58,9 +61,23 @@ public:
     {
         return UdpReceiverSocket;
     }
+    char* getReceiveMessage()
+    {
+        return recvBuffer;
+    }
+    char* getSenderMessage()
+    {
+        return sendBuffer;
+    }
+
+    
     int initSocket(int protocol);
     int receiver(int protocol);
     int sender(int protocol);
+    int broadcastIP(std::string port, std::string ServerID);
+    std::string getLocalIpAddress();
+    std::string getLocalID();
+
 private:
     TcpSocket *TcpReceiverSocket;
     UdpSocket *UdpSenderSocket;
@@ -297,6 +314,67 @@ inline int Network::sender(int protocol)
     return OK;
 }
 
+inline int Network::broadcastIP(std::string port, std::string ServerID)
+{
+    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+        std::cerr << "Cannot open socket" << std::endl;
+        return ERROR;
+    }
+ 
+    struct sockaddr_in broadcast_addr;
+    memset(&broadcast_addr, 0, sizeof(broadcast_addr));
+    broadcast_addr.sin_family = AF_INET;
+    broadcast_addr.sin_port = htons(std::stoi(port));
+ 
+    // broadcast address 255.255.255.255
+    in_addr_t addr = INADDR_BROADCAST;
+
+    broadcast_addr.sin_addr.s_addr = addr;
+ 
+    const std::string message = "ServerID:"+ ServerID + "\n" + "IPAddress" + getLocalIpAddress() + "\n";
+    ssize_t send_len = sendto(sockfd, message.c_str(), strlen( message.c_str()), 0,
+                              (struct sockaddr *)&broadcast_addr, sizeof(broadcast_addr));
+ 
+    if (send_len < 0) {
+        std::cerr << "Sendto failed" << std::endl;
+        close(sockfd);
+        return -1;
+    }
+ 
+    std::cout << "Broadcast message sent" << std::endl;
+    close(sockfd);
+    return 0;
+}
+
+inline std::string Network::getLocalIpAddress()
+{
+    std::string ipAddress = "Error Unknown IPAddress";
+    struct ifaddrs *ifaddr, *ifa;
+    if (getifaddrs(&ifaddr) == -1)
+    {
+        return ipAddress;
+    }
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) 
+    {
+        if (ifa->ifa_addr == NULL) 
+        {
+            continue;
+        }
+        if (ifa->ifa_addr->sa_family == AF_INET)
+        {
+            struct sockaddr_in *addr = (struct sockaddr_in *)ifa->ifa_addr;
+            if (strcmp(ifa->ifa_name, "lo") != 0 && addr->sin_addr.s_addr != INADDR_LOOPBACK) {
+                char ip[INET_ADDRSTRLEN];
+                inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
+                ipAddress = ip;
+                break;
+            }
+        }
+    }
+    freeifaddrs(ifaddr);
+    return ipAddress;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif //__NETWORK__H_
