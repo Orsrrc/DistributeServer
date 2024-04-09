@@ -10,7 +10,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "intelliSenseMode": "windows-gcc-x64",
+            "intelliSenseMode": "${default}",
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++20"

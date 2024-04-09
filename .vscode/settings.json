@@ -85,7 +85,11 @@
         "ranges": "cpp",
         "forward_list": "cpp",
         "pr47333.C": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "__bit_reference": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp"
     },
     "C_Cpp.default.includePath": [
 
