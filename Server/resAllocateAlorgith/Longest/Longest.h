@@ -1,7 +1,6 @@
 #ifndef __LONGEST__H_
 #define __LONGEST__H_
 
-
 #include "../../Common.hpp"
 
 
@@ -11,8 +10,8 @@ class longest
 
     int allocate(std::map<int, std::string> resourceSet);
 
-}
+};
 
 
 
-#endif //__LONGEST__H_
+#endif //__LONGEST__H_ 

@@ -11,7 +11,7 @@ int longest::allocate(std::map<int, std::string> resourceSet)
     return OK;
 }
 
-int longest::getLongestShardID (std::map<int, int> shard_length)
+int longest::get_longest_shard_id (std::map<int, int> shard_length)
 {
     int ID = 0;
     int longest = 0;

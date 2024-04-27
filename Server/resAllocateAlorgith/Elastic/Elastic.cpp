@@ -1,7 +1,7 @@
 #include "Elastic.h"
 
 
-int elastic::elasticAlgorithm::Drift_Plus_Penalty_Resouce_Allocation(
+int elastic::Drift_Plus_Penalty_Resouce_Allocation(
     std::vector<int> shardSet,
     std::map<int, std::string> resouceSet,
     double penltyWeight,
@@ -11,7 +11,7 @@ int elastic::elasticAlgorithm::Drift_Plus_Penalty_Resouce_Allocation(
     double temp = 0;
     for (int i = 0; shardSet[i] != NULL; i++)
     {
-        temp = ProcessServer::elasticAlgorithm::Resource_Allocation_Per_Timeslot(shardSet[i], resouceSet, penltyWeight, alpha, reward, get_the_length_of_the_actual_shard(shardSet[i]));
+        temp = elastic::Resource_Allocation_Per_Timeslot(shardSet[i], resouceSet, penltyWeight, alpha, reward, get_the_length_of_the_actual_shard(shardSet[i]));
         if (!temp)
         {
             return ERROR;
@@ -21,7 +21,7 @@ int elastic::elasticAlgorithm::Drift_Plus_Penalty_Resouce_Allocation(
     return OK;
 }
 
-int elastic::elasticAlgorithm::Resource_Allocation_Per_Timeslot(
+int elastic::Resource_Allocation_Per_Timeslot(
     int shardIndex,
     std::map<int, std::string> resouceSet,
     double penltyWeight,
@@ -43,23 +43,3 @@ int elastic::elasticAlgorithm::Resource_Allocation_Per_Timeslot(
     return OK;
 }
 
-int elastic::dualdecomposition::dualdecomposition_allocate(double maxIteration, std::vector<int> shardSet, std::map<int, std::string> resourceSet, double penltyWeight, double alpha, double reward, double shardLength)
-{
-
-    double allocate = 0;
-    for (int j = 0; j < maxIteration; j++)
-    {
-        for (int i = 0; shardSet[i] != NULL; i++)
-        {
-            for (auto iterator = resourceSet.begin(); iterator != resourceSet.end(); iterator++)
-            {
-                allocate = ((penltyWeight - get_kth_resource_gamma_value(iterator->first)) 
-                            / (alpha * pow((get_the_weight_of_the_resource(iterator->first)), alpha) * ( get_the_length_of_the_actual_shard(shardSet[i])))
-                            + pow( reward * penltyWeight + get_ith_shard_lamba_value(shardSet[i]) , (1/(alpha -1)) )
-                              );
-            }
-        }
-    }
-
-    return 0;
-}

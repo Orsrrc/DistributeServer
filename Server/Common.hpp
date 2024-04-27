@@ -42,12 +42,19 @@ int SourceNum = 0;
 class shard
 {
     public:
-    double getResAllocateInfo(int ID)
+    shard(int id)
+    :ID(id)
+    {
+        ;
+    }
+    ~shard();
+
+    double getResAllocateInfo(int resourceType)
     {
         
         for(auto iterator = resouce_allocate_info.begin();iterator != resouce_allocate_info.end(); iterator++ )
         {
-            if(iterator->first == ID)
+            if(iterator->first == resourceType)
             {
                 return iterator->second;
             }
@@ -56,7 +63,7 @@ class shard
         return ERROR;
     }
 
-    int getshardLength()
+    int getShardLength()
     {
         return shard_length;
     }
@@ -132,6 +139,12 @@ std::string SHA256(const std::string &input)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
 ///////////////////////define the data struct/////////////////////////////////////////////////////////////////////
 
 //
@@ -172,6 +185,14 @@ struct Block
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 
 /////////////////////// SYMBOLS AND NOTIFIACTION ////////////////////////////////////////////////////////////////////
 double get_budget(const int resourceType) // the budget of the kth resouce
@@ -296,6 +317,9 @@ extern std::map<int, int> shard_length;            // shard info :  <ID:length>
 extern std::map<int, std::string> resourceSet; // resource info : <resource ID:resource name>
 
 extern std::map<int, double> resourceBudget; // resource max allocate info : <resource ID : resource max budget>
+
+extern std::map<int, shard> shardSet; //map <ID :: shard >
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
