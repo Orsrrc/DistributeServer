@@ -35,7 +35,15 @@ class transaction
     {
         ;
     }
+
+
+
+
+
     ~transaction();
+
+
+    
     private:
     std::string ID;
     std::string TimeStamp;
