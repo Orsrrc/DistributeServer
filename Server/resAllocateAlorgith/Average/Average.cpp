@@ -2,8 +2,6 @@
 #include <vector>
 #include <cmath>
 
-
-
 void Average(int ShardNum) {
     int SourceNum = 2;
     std::vector<int> MaxNum = {3300, 3000}; // Maximum resource values

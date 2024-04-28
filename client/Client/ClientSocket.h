@@ -25,7 +25,7 @@ public:
     int sendByUdp(QString Username, QString Password, QHostAddress ServerAddress, quint16 ServerPort);
 
     int UdpBind(QHostAddress ServerAddress, quint16 ServerPort);
-    int TcpConnect( QHostAddress ServerAddress, quint16 ServerPort = 9800);
+    int TcpConnect( QString ServerAddress, quint16 ServerPort = 9800);
 
 
     int receiveLoginInfo(int& state);

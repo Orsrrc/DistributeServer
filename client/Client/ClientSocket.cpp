@@ -55,9 +55,9 @@ int Network::sendByTcp(QString Username, QString Password)
     }
     return OK;
 }
-int Network::TcpConnect( QHostAddress ServerAddress, quint16 ServerPort)
+int Network::TcpConnect( QString ServerAddress, quint16 ServerPort)
 {
-    qDebug() << "Server IP Address is"<< ServerAddress.toString();
+    qDebug() << "Server IP Address is"<< ServerAddress;
     qDebug() << "Server port is"<<ServerPort;
     qDebug() << "waiting for connect to host";
     //Tcp connect
@@ -142,7 +142,6 @@ int Network::receiveLoginInfo(int& state)
         QMessageBox::critical(this, (QString)"Error", (QString)"login fail");
     }
     */
-
 
     qDebug() << "receive LoginInfo";
     state = LOGINSUSSESS;

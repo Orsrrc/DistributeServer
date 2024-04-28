@@ -5,7 +5,6 @@ int main()
 	IDServer idServer;
 	std::cout << "ID SERVER:" << idServer.getID() << std::endl;
 	Network recv;
-
 	recv.receiver(PROTOCOL_UDP); // receiver to recvBuffer
 
 	/*

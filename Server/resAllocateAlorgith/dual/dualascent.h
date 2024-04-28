@@ -5,6 +5,8 @@
 #include <map>
 #include <string>
 #include <math.h>
+#include <cmath>
+#include <iostream>
 #include "../../Common.hpp"
 
 class dualascent
@@ -38,14 +40,10 @@ public:
                                    double alpha,
                                    double reward,
                                    double shardLength);
-
-
-    int dualdecomposition_allocate();
-
     double max(int x, int y);
     double resCount(int begin, int end);
 
-    
+    int dualdecomposition_allocate();
 };
 
 #endif //__DUALASCENT__H_

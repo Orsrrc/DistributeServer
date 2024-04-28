@@ -44,8 +44,13 @@ void LoginDialog::on_btn_login_clicked()
         //choose TCP to sent
         else if(ui->btn_protocol->currentIndex() == PROTOCOL_TCP)
         {
-            client.TcpConnect(QHostAddress (ui->edit_IPAdress->text() ),ui->edit_Port->text().toUInt());
-            client.sendByTcp(ui->edit_username->text(), ui->edit_password->text());
+            client.TcpConnect(
+                            QString ( ui->edit_IPAdress->text() ),
+                              ui->edit_Port->text().toUInt()
+                              );
+            client.sendByTcp(ui->edit_username->text(),
+                                     ui->edit_password->text()
+                                    );
         }
     }
 }

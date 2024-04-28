@@ -1,5 +1,9 @@
 #include "IDServer.h"
 
+
+
+
+
 int IDServer::connectToMysql(MYSQL* conn, const char* host, const char* user, const char* password, const char* database)
 {                                                                   // MySQL connection object
     MYSQL *conn = mysql_init(NULL);

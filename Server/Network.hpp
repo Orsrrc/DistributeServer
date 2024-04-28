@@ -13,8 +13,6 @@
 #include <net/if.h>
 #include <ifaddrs.h>
 
-
-
 class TcpSocket
 {
 public:
@@ -22,6 +20,7 @@ public:
     ~TcpSocket();
     int getSocketfd()
     {
+
         return Socketfd;
     }
 
@@ -61,16 +60,15 @@ public:
     {
         return UdpReceiverSocket;
     }
-    char* getReceiveMessage()
+    char *getReceiveMessage()
     {
         return recvBuffer;
     }
-    char* getSenderMessage()
+    char *getSenderMessage()
     {
         return sendBuffer;
     }
 
-    
     int initSocket(int protocol);
     int receiver(int protocol);
     int sender(int protocol);
@@ -93,7 +91,6 @@ private:
 
 class IPAddress
 {
-    
 };
 
 ///////////////////////////////////////////////////////////////////TCP ////////////////////////////////////////////////////////////////////////////////////////
@@ -120,12 +117,13 @@ TcpSocket::TcpSocket(const std::string IpAddress, const std::string Port)
     // 绑定套接字
     if (bind(Socketfd, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
-        std::cout << "bind socket failed....reason is";
         perror("bind");
+        std::cout << "bind socket failed......";
         std::cout << std::endl;
         close(Socketfd);
         exit(EXIT_FAILURE);
     }
+    
     std::cout << "bind IP address successed!" << std::endl;
 }
 
@@ -162,8 +160,8 @@ UdpSocket::UdpSocket(const std::string IpAddress, const std::string Port)
     // 绑定套接字
     if (bind(Socketfd, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
-        std::cout << "bind socket failed....reason is";
         perror("bind");
+        std::cout << "bind socket failed....";
         std::cout << std::endl;
         close(Socketfd);
         exit(EXIT_FAILURE);
@@ -183,6 +181,7 @@ UdpSocket::~UdpSocket()
 inline Network::Network(const std::string IpAddress, const std::string port)
 {
     std::cout << "init Network" << std::endl;
+    initSocket(PROTOCOL_UDP);
 }
 
 inline Network::~Network()
@@ -190,7 +189,7 @@ inline Network::~Network()
     close(UdpSenderSocket->getSocketfd());
     close(TcpReceiverSocket->getSocketfd());
     close(UdpReceiverSocket->getSocketfd());
-    delete TcpReceiverSocket, UdpReceiverSocket,UdpSenderSocket;
+    delete TcpReceiverSocket, UdpReceiverSocket, UdpSenderSocket;
 }
 
 inline int Network::initSocket(int protocol)
@@ -201,7 +200,7 @@ inline int Network::initSocket(int protocol)
     }
     else if (protocol == PROTOCOL_UDP)
     {
-        UdpSenderSocket = new UdpSocket();
+       //UdpSenderSocket = new UdpSocket();
         UdpReceiverSocket = new UdpSocket();
     }
     else
@@ -219,7 +218,9 @@ inline int Network::receiver(int protocol)
     bool isflag = true;
     if (protocol == PROTOCOL_TCP)
     {
-        if( listen(TcpReceiverSocket->getSocketfd(), 128) == -1)
+
+        std::cout << "listening:" << TcpReceiverSocket->getSocketfd() << std::endl;
+        if (listen(TcpReceiverSocket->getSocketfd(), 128) == -1)
         {
             perror("listen");
             close(TcpReceiverSocket->getSocketfd());
@@ -230,15 +231,16 @@ inline int Network::receiver(int protocol)
             socklen_t length = sizeof(client);
             std::cout << "waiting for connect....." << std::endl;
             clientSocketfd = accept(TcpReceiverSocket->getSocketfd(), (struct sockaddr *)&client, &length);
-            std::cout << "receive from:" << inet_ntop(AF_INET, &client.sin_addr.s_addr, resAddress, sizeof(resAddress)) << " " << "port:" << ntohs(client.sin_port) << std::endl;
-            if(clientSocketfd == -1)
+            std::cout << "receive from:" << inet_ntop(AF_INET, &client.sin_addr.s_addr, resAddress, sizeof(resAddress)) << " "
+                      << "port:" << ntohs(client.sin_port) << std::endl;
+            if (clientSocketfd == -1)
             {
                 perror("accept");
                 close(TcpReceiverSocket->getSocketfd());
                 exit(EXIT_FAILURE);
             }
             length = read(clientSocketfd, recvBuffer, sizeof(recvBuffer) - 1);
-            if( length == -1)
+            if (length == -1)
             {
                 perror("read");
                 close(UdpReceiverSocket->getSocketfd());
@@ -260,14 +262,16 @@ inline int Network::receiver(int protocol)
             struct sockaddr_in client;
             socklen_t length = sizeof(client);
             std::cout << "waiting for connect....." << std::endl;
-            ssize_t size = recvfrom(UdpReceiverSocket->getSocketfd(),                   // 通信套接字fd
-                                recvBuffer,                     // 缓冲区首地址
-                                sizeof(recvBuffer) - 1,         // 缓冲区大小 ssize_t == long
-                                0,                          // flag
-                                (struct sockaddr *)&client, // 客户端对象
-                                &length);                   // 地址长度
-            std::cout << "Receive from:" << inet_ntop(AF_INET, &client.sin_addr.s_addr, resAddress, sizeof(resAddress)) <<" "<< "Port:" << ntohs(client.sin_port) << std::endl;
-            std::cout << "message is :"<< recvBuffer << std::endl;
+            ssize_t size = recvfrom(UdpReceiverSocket->getSocketfd(), // 通信套接字fd
+                                    recvBuffer,                       // 缓冲区首地址
+                                    sizeof(recvBuffer) - 1,           // 缓冲区大小 ssize_t == long
+                                    0,                                // flag
+                                    (struct sockaddr *)&client,       // 客户端对象
+                                    &length);                         // 地址长度
+
+            std::cout << "Receive from:" << inet_ntop(AF_INET, &client.sin_addr.s_addr, resAddress, sizeof(resAddress)) << " "
+                      << "Port:" << ntohs(client.sin_port) << std::endl;
+            std::cout << "message is :" << recvBuffer << std::endl;
             if (length < 0)
             {
                 perror("recvfrom");
@@ -292,9 +296,9 @@ inline int Network::receiver(int protocol)
 inline int Network::sender(int protocol)
 {
     strcpy(sendBuffer, "OK");
-    if(protocol == PROTOCOL_UDP)
+    if (protocol == PROTOCOL_UDP)
     {
-         if (sendto(UdpSenderSocket->getSocketfd(), sendBuffer, sizeof(sendBuffer) - 1, 0, (struct sockaddr *)&client, sizeof(client)) == -1)
+        if (sendto(UdpSenderSocket->getSocketfd(), sendBuffer, sizeof(sendBuffer) - 1, 0, (struct sockaddr *)&client, sizeof(client)) == -1)
         {
             perror("sendto");
         }
@@ -303,13 +307,13 @@ inline int Network::sender(int protocol)
             std::cout << "send messages have done" << std::endl;
         }
     }
-    else if(protocol == PROTOCOL_TCP)
+    else if (protocol == PROTOCOL_TCP)
     {
-       if(  write(clientSocketfd, sendBuffer, sizeof(sendBuffer)) == -1)
-       {
-        perror("write");
-        exit(EXIT_FAILURE);
-       } 
+        if (write(clientSocketfd, sendBuffer, sizeof(sendBuffer)) == -1)
+        {
+            perror("write");
+            exit(EXIT_FAILURE);
+        }
     }
     return OK;
 }
@@ -317,31 +321,33 @@ inline int Network::sender(int protocol)
 inline int Network::broadcastIP(std::string port, std::string ServerID)
 {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0) {
+    if (sockfd < 0)
+    {
         std::cerr << "Cannot open socket" << std::endl;
         return ERROR;
     }
- 
+
     struct sockaddr_in broadcast_addr;
     memset(&broadcast_addr, 0, sizeof(broadcast_addr));
     broadcast_addr.sin_family = AF_INET;
     broadcast_addr.sin_port = htons(std::stoi(port));
- 
+
     // broadcast address 255.255.255.255
     in_addr_t addr = INADDR_BROADCAST;
 
     broadcast_addr.sin_addr.s_addr = addr;
- 
-    const std::string message = "ServerID:"+ ServerID + "\n" + "IPAddress" + getLocalIpAddress() + "\n";
-    ssize_t send_len = sendto(sockfd, message.c_str(), strlen( message.c_str()), 0,
+
+    const std::string message = "ServerID:" + ServerID + "\n" + "IPAddress" + getLocalIpAddress() + "\n";
+    ssize_t send_len = sendto(sockfd, message.c_str(), strlen(message.c_str()), 0,
                               (struct sockaddr *)&broadcast_addr, sizeof(broadcast_addr));
- 
-    if (send_len < 0) {
+
+    if (send_len < 0)
+    {
         std::cerr << "Sendto failed" << std::endl;
         close(sockfd);
         return -1;
     }
- 
+
     std::cout << "Broadcast message sent" << std::endl;
     close(sockfd);
     return 0;
@@ -355,16 +361,17 @@ inline std::string Network::getLocalIpAddress()
     {
         return ipAddress;
     }
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) 
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next)
     {
-        if (ifa->ifa_addr == NULL) 
+        if (ifa->ifa_addr == NULL)
         {
             continue;
         }
         if (ifa->ifa_addr->sa_family == AF_INET)
         {
             struct sockaddr_in *addr = (struct sockaddr_in *)ifa->ifa_addr;
-            if (strcmp(ifa->ifa_name, "lo") != 0 && addr->sin_addr.s_addr != INADDR_LOOPBACK) {
+            if (strcmp(ifa->ifa_name, "lo") != 0 && addr->sin_addr.s_addr != INADDR_LOOPBACK)
+            {
                 char ip[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &addr->sin_addr, ip, INET_ADDRSTRLEN);
                 ipAddress = ip;

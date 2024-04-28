@@ -15,8 +15,11 @@ public:
     {
         
     }
+    /*
     ~IDServer();
+    */
 
+   
     std::string generateServerID() // generate Server's ID length == 10
     {
         return generateRandomDigit(10);

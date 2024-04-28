@@ -195,6 +195,8 @@ struct Block
 
 
 /////////////////////// SYMBOLS AND NOTIFIACTION ////////////////////////////////////////////////////////////////////
+
+/* error
 double get_budget(const int resourceType) // the budget of the kth resouce
 {
     auto iterator = resourceBudget.begin();
@@ -209,6 +211,9 @@ double get_budget(const int resourceType) // the budget of the kth resouce
     return iterator->second;
 }
 
+*/
+
+/*error
 int compareToResourceBudget(std::map<int, double> resourceAllocate) // compare to resouce budget if budget not enough return error
 {
     for (auto iterator = resourceAllocate.begin(); iterator != resourceAllocate.end(); iterator++)
@@ -221,7 +226,9 @@ int compareToResourceBudget(std::map<int, double> resourceAllocate) // compare t
         }
     }
 }
+*/
 
+/* error
 int compareToIterval(std::vector<int> shardSet, double BlockSize, double BlockInterval, double SlotsInterval) // compare to block interval if interval not enough return error
 {
     for (int i = 0; shardSet[i] != NULL; i++)
@@ -234,6 +241,8 @@ int compareToIterval(std::vector<int> shardSet, double BlockSize, double BlockIn
         }
     }
 }
+
+*/
 
 void init_queue();                                                        // initliation queue
 void inject_actual_queues_set();                                          // inject the vector of actual queues
@@ -311,7 +320,7 @@ extern std::map<int, shard *> shardAddress;
 extern std::map<int, long double> dequeuedQueues;
 extern std::map<int, long double> arrivalQueues;
 
-extern std::map<int, double> shardSet;
+extern std::map<int, double> shardSet2;
 
 extern std::map<int, int> shard_length;            // shard info :  <ID:length>
 extern std::map<int, std::string> resourceSet; // resource info : <resource ID:resource name>

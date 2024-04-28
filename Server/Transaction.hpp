@@ -1,12 +1,8 @@
 #ifndef __TRANSACTION__HPP_
 #define __TRANSACTION__HPP_
 
-
-
 #include "Common.hpp"
 #include "Network.hpp"
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -23,46 +19,39 @@ Metadata: <Optional additional information>
 
 class transaction
 {
-    public:
-    transaction(IPAddress* senderAddress,IPAddress* recipientAddress, double fee,  std::string signature, std::string metaData)
-    :ID(SHA256(generateRandomString())),
-    TimeStamp(get_current_time()),
-    SenderAddress(senderAddress),
-    RecipientAddress(recipientAddress),
-    fee(fee),
-    signature(signature),
-    MetaData(metaData)
+public:
+    transaction(IPAddress *senderAddress, IPAddress *recipientAddress, double fee, std::string signature, std::string metaData)
+        : ID(SHA256(generateRandomString())),
+          TimeStamp(get_current_time()),
+          SenderAddress(senderAddress),
+          RecipientAddress(recipientAddress),
+          fee(fee),
+          signature(signature),
+          MetaData(metaData)
     {
         ;
     }
 
-
-
-
-
     ~transaction();
 
-
-    
-    private:
+private:
     std::string ID;
     std::string TimeStamp;
-    IPAddress* SenderAddress;
-    IPAddress* RecipientAddress;
+    IPAddress *SenderAddress;
+    IPAddress *RecipientAddress;
     double fee;
     std::string signature;
     std::string MetaData;
 };
 
-transaction::transaction(IPAddress* senderAddress,IPAddress* recipientAddress, double fee,  std::string signature, std::string metaData)
+transaction::transaction(IPAddress *senderAddress, IPAddress *recipientAddress, double fee, std::string signature, std::string metaData)
 {
     ;
 }
 
- 
 transaction::~transaction()
 {
     ;
-} 
+}
 
 #endif //__TRANSACTION__HPP_
