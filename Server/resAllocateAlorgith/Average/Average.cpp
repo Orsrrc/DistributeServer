@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-
-void Average(int ShardNum) {
+#include "Average.h"
+int  resAllocation::Average (int ShardNum) {
     int SourceNum = 2;
     std::vector<int> MaxNum = {3300, 3000}; // Maximum resource values
     std::vector<int> Weight = {5, 4}; // Weights for resources
@@ -40,10 +40,7 @@ void Average(int ShardNum) {
     for (int k = 0; k < SourceNum; ++k) {
         std::cout << "Resource " << k + 1 << ": " << P[k] << std::endl;
     }
+
+    return OK;
 }
 
-int main() {
-    int numShards = 4;
-    Average(numShards);
-    return 0;
-}

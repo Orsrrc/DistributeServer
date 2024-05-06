@@ -33,13 +33,6 @@ public:
 
     int setResAllocate(int shardID, int resType, double value);
 
-    int dualdecomposition_allocate(double maxIteration,
-                                   std::vector<int> shardSet,
-                                   std::map<int, std::string> resourceSet,
-                                   double penltyWeight,
-                                   double alpha,
-                                   double reward,
-                                   double shardLength);
     double max(int x, int y);
     double resCount(int begin, int end);
 
