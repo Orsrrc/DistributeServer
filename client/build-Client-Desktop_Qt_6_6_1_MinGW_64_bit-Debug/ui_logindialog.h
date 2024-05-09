@@ -27,7 +27,7 @@ class Ui_LoginDialog
 {
 public:
     QLineEdit *lineEdit;
-    QWidget *widget;
+    QWidget *layoutWidget;
     QVBoxLayout *verticalLayout_3;
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout_2;
@@ -80,17 +80,17 @@ public:
         lineEdit->setFrame(false);
         lineEdit->setDragEnabled(false);
         lineEdit->setReadOnly(true);
-        widget = new QWidget(LoginDialog);
-        widget->setObjectName("widget");
-        widget->setGeometry(QRect(60, 60, 451, 261));
-        verticalLayout_3 = new QVBoxLayout(widget);
+        layoutWidget = new QWidget(LoginDialog);
+        layoutWidget->setObjectName("layoutWidget");
+        layoutWidget->setGeometry(QRect(60, 60, 451, 261));
+        verticalLayout_3 = new QVBoxLayout(layoutWidget);
         verticalLayout_3->setObjectName("verticalLayout_3");
         verticalLayout_3->setContentsMargins(0, 0, 0, 0);
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName("horizontalLayout");
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName("verticalLayout_2");
-        label = new QLabel(widget);
+        label = new QLabel(layoutWidget);
         label->setObjectName("label");
         QFont font1;
         font1.setPointSize(14);
@@ -100,7 +100,7 @@ public:
 
         verticalLayout_2->addWidget(label);
 
-        label_2 = new QLabel(widget);
+        label_2 = new QLabel(layoutWidget);
         label_2->setObjectName("label_2");
         label_2->setFont(font1);
 
@@ -111,13 +111,13 @@ public:
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName("verticalLayout");
-        edit_username = new QLineEdit(widget);
+        edit_username = new QLineEdit(layoutWidget);
         edit_username->setObjectName("edit_username");
         edit_username->setEchoMode(QLineEdit::Normal);
 
         verticalLayout->addWidget(edit_username);
 
-        edit_password = new QLineEdit(widget);
+        edit_password = new QLineEdit(layoutWidget);
         edit_password->setObjectName("edit_password");
         edit_password->setEchoMode(QLineEdit::Password);
 
@@ -129,7 +129,7 @@ public:
 
         verticalLayout_3->addLayout(horizontalLayout);
 
-        btn_protocol = new QComboBox(widget);
+        btn_protocol = new QComboBox(layoutWidget);
         btn_protocol->addItem(QString());
         btn_protocol->addItem(QString());
         btn_protocol->setObjectName("btn_protocol");
@@ -138,22 +138,22 @@ public:
 
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setObjectName("horizontalLayout_3");
-        label_3 = new QLabel(widget);
+        label_3 = new QLabel(layoutWidget);
         label_3->setObjectName("label_3");
 
         horizontalLayout_3->addWidget(label_3);
 
-        edit_IPAdress = new QLineEdit(widget);
+        edit_IPAdress = new QLineEdit(layoutWidget);
         edit_IPAdress->setObjectName("edit_IPAdress");
 
         horizontalLayout_3->addWidget(edit_IPAdress);
 
-        label_4 = new QLabel(widget);
+        label_4 = new QLabel(layoutWidget);
         label_4->setObjectName("label_4");
 
         horizontalLayout_3->addWidget(label_4);
 
-        edit_Port = new QLineEdit(widget);
+        edit_Port = new QLineEdit(layoutWidget);
         edit_Port->setObjectName("edit_Port");
 
         horizontalLayout_3->addWidget(edit_Port);
@@ -167,12 +167,12 @@ public:
 
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName("horizontalLayout_2");
-        btn_login = new QPushButton(widget);
+        btn_login = new QPushButton(layoutWidget);
         btn_login->setObjectName("btn_login");
 
         horizontalLayout_2->addWidget(btn_login);
 
-        btn_exit = new QPushButton(widget);
+        btn_exit = new QPushButton(layoutWidget);
         btn_exit->setObjectName("btn_exit");
 
         horizontalLayout_2->addWidget(btn_exit);

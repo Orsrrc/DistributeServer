@@ -19,16 +19,22 @@ class Network
 public:
     explicit Network(QObject *parent = 0);
     ~Network();
-    int createSocket(QObject* parent ,QObject *receiver, int protocol = PROTOCOL_TCP);
 
-    int sendByTcp(QString Username, QString Password);
+
+    int createSocket(QObject* parent , int protocol = PROTOCOL_TCP);
+
+    //UDP
+
     int sendByUdp(QString Username, QString Password, QHostAddress ServerAddress, quint16 ServerPort);
-
     int UdpBind(QHostAddress ServerAddress, quint16 ServerPort);
-    int TcpConnect( QString ServerAddress, quint16 ServerPort = 9800);
 
+   //TCP
+    int TcpConnect( QString ServerAddress, quint16 ServerPort = 9800);
+     int sendByTcp(QString Username, QString Password);
 
     int receiveLoginInfo(int& state);
+
+
 //inline function
     QTcpSocket* getTcpSender()
     {
@@ -47,8 +53,11 @@ public:
     {
         return UdpReceiverSocket;
     }
+
 private slots:
-           void ClientReceiveData();
+
+
+
 private:
     QTcpSocket *TcpSenderSocket;
     QTcpSocket *TcpReceiverSocket;

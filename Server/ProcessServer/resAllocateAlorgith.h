@@ -11,30 +11,30 @@
 
 class alorgith
 {
-    int Average(int ShardNum);
+public:
+    int Top_(int ShardNum, int SourceNum, const std::vector<int>& MaxNum, const std::vector<int>& Weight, double alpha, std::vector<double>& B);
+
+    int Average(int ShardNum, int SourceNum, const std::vector<int>& MaxNum, const std::vector<int>& Weight, double alpha, std::vector<double>& B, std::vector<std::vector<double>>& p);
 
     int Dualascent();
 
     int Dualascentfl();
 
-    pair<vector<double>, vector<double>> Elastic(double Q, vector<double> Z, double V, int ShardNum);
+    int Elastic();
 
-    int invoke_elastic();
+
 
     int Longest(vector<int> &Q, int ShardNum, vector<int> &B, vector<int> &P);
     int invoke_longest();
 
     int Random(int ShardNum, vector<int> &B, vector<int> &P);
 
-    int invokd_random();
 
 
-    int resallocation(vector<int>& Q, int V);
+    int resallocation(vector<int> &Q, int V);
     int resallocation_lagrange(vector<int> Q, int V);
-    
+
     int resallocation_without_blockinterval(vector<int> Q, int V, int ShardNum);
-
-
 };
 
 #endif //__RESALLOCATEALORGITH__H_

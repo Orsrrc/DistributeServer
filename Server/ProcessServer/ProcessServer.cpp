@@ -5,10 +5,6 @@
 using namespace std;
 
 
-
-
-
-
 int ProcessServer::simulation_shard_num()
 {
     int ShardNum = 5;
@@ -89,14 +85,14 @@ int ProcessServer::simulation_shard_num()
     for (int t = 0; t < T; ++t) {
         TimeSlot[t] = t;
         cout << t << endl;
-
+        alorgith alorgith;
         // Call the functions implemented in C++
-        BE[t] = Elastic( Q[t], Z[t], 30, ShardNum);
-        B[t] = reallocationlagrange(Q[t], 30, ShardNum);
-        BSTop[t] = STop(QST[t], ShardNum);
-        BLongest[t] = Longest(QL[t], ShardNum);
-        BAve[t] = Average(ShardNum);
-        BRand[t] = Random(ShardNum);
+        BE[t] = alorgith.Elastic( Q[t], Z[t], 30, ShardNum);
+        B[t] = alorgith.resallocation_lagrange(Q[t], 30, ShardNum);
+        BSTop[t] = stop(QST[t], ShardNum);
+        BLongest[t] = alorgith.Longest(QL[t], ShardNum);
+        BAve[t] = alorgith.Average(ShardNum);
+        BRand[t] = alorgith.Random(ShardNum);
 
         // Update Q and Z based on the results of the functions
         for (int i = 0; i < ShardNum; ++i) {

@@ -9,23 +9,21 @@ Network::Network(QObject *parent)
 Network::~Network()
 {
     delete TcpSenderSocket, TcpReceiverSocket, UdpSenderSocket, UdpReceiverSocket;
-    qDebug() << "Destory Client";
+    qDebug() << "Destory Client Socket";
 }
 
-int Network::createSocket(QObject* parent, QObject *receiver, int protocol)
+int Network::createSocket(QObject* parent , int protocol)
 {
     if( protocol == PROTOCOL_TCP)
     {
         //creat tcp socket
         TcpSenderSocket = new QTcpSocket(parent);
-        TcpReceiverSocket = new QTcpSocket(receiver);
         qDebug() << "create TCP Socket successed";
     }
     else if(PROTOCOL_UDP)
     {
         //create udp socket
         UdpSenderSocket = new QUdpSocket();
-        UdpReceiverSocket = new QUdpSocket();
         qDebug() << "create UDP Socket successed";
     }
     return OK;
@@ -36,47 +34,69 @@ int Network::createSocket(QObject* parent, QObject *receiver, int protocol)
 /////////////////////////////////////////TCP////////////////////////////////////////////////////////////////////
 int Network::sendByTcp(QString Username, QString Password)
 {
-    QString sendMessage;
-    sendMessage.assign(Username+'\n'+Password);
-    QByteArray datagram = sendMessage.toUtf8();
-    if( TcpSenderSocket->write(datagram) == -1 )
+
+    if( TcpSenderSocket->isOpen() )
     {
-        qDebug() << "send error\n"<< "reason is"  <<   TcpSenderSocket->error();
-        return ERROR;
+        //package send message
+        QString sendMessage;
+        sendMessage.assign(Username+'\n'+Password);
+        QByteArray datagram = sendMessage.toUtf8();
+
+        if( TcpSenderSocket->write(datagram) == -1 )
+        {
+            qDebug() << "Send Error\n"<< "reason is"  <<   TcpSenderSocket->error();
+            return ERROR;
+        }
+        else
+        {
+             qDebug() << "Send Successed!";
+        }
+        /*
+        else if ( TcpSenderSocket->waitForBytesWritten())
+        {
+            qDebug() << "Send Successed!";
+        }
+
+        else
+        {
+            qDebug() << "Send Error!\n" << "reason is" << TcpSenderSocket->error();
+            return ERROR;
+        }
+    */
     }
-    if ( TcpSenderSocket->waitForBytesWritten())
-    {
-        qDebug() << "send successed";
-    }
-    else
-    {
-        qDebug() << "send error\n" << "reason is" << TcpSenderSocket->error();
-        return ERROR;
-    }
+
+    //socket close
+    TcpSenderSocket->disconnectFromHost();
+    TcpSenderSocket->close();
+
     return OK;
 }
 int Network::TcpConnect( QString ServerAddress, quint16 ServerPort)
 {
     qDebug() << "Server IP Address is"<< ServerAddress;
     qDebug() << "Server port is"<<ServerPort;
-    qDebug() << "waiting for connect to host";
+
+
     //Tcp connect
-    TcpSenderSocket->connectToHost(ServerAddress, ServerPort);
+    TcpSenderSocket->connectToHost( ServerAddress, ServerPort);
+
+
+    qDebug() << "Waiting for connect to host......";
     if(TcpSenderSocket->waitForConnected())
     {
         qDebug() << "TCP Connected!";
-        qDebug() << "create send socket sussess";
+        qDebug() << "Create sender socket sussess";
         return OK;
     }
     else
     {
-        qDebug() << "TCP Connect not found";
-        qDebug() << TcpSenderSocket->error( );
+       qDebug() << "Failed to connect to server:" <<TcpSenderSocket->errorString();
         return ERROR;
     }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 ///////////////////////////////////UDP///////////////////////////////////////////////////////////////////////////////////
 int Network::sendByUdp(QString Username, QString Password, QHostAddress ServerAddress, quint16 ServerPort)
@@ -117,10 +137,6 @@ int Network::UdpBind(QHostAddress ServerAddress, quint16 ServerPort)
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
-void Network::ClientReceiveData()
-{
-
-}
 
 
 

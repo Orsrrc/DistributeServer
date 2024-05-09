@@ -8,9 +8,14 @@ LoginDialog::LoginDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
+    //set dialog focus on top window
+    this->setWindowFlags(  Qt::Window | Qt::FramelessWindowHint | Qt::Tool| Qt::WindowStaysOnTopHint);
+    this->setAttribute(Qt::WA_X11DoNotAcceptFocus, true);
+
     //fix dialog size
     this->setMaximumSize(550, 350);
     this->setMinimumSize(550,350);
+
 }
 
 LoginDialog::~LoginDialog()
@@ -22,7 +27,9 @@ void LoginDialog::on_btn_login_clicked()
 {
     //ready for send message
     Network client;
-    client.createSocket(this, this, ui->btn_protocol->currentIndex());
+
+    client.createSocket(this,  ui->btn_protocol->currentIndex());
+
     if(ui->edit_IPAdress->text() == " ")
     {
         QMessageBox::warning(this, "IP", "IP地址未输入");
@@ -36,11 +43,14 @@ void LoginDialog::on_btn_login_clicked()
         //choose UDP to sent
         if(ui->btn_protocol->currentIndex() == PROTOCOL_UDP)
         {
-            client.sendByUdp(ui->edit_username->text(),
+            client.sendByUdp(
+                             ui->edit_username->text(),
                              ui->edit_password->text(),
-                             QHostAddress (ui->edit_IPAdress->text() ),
+                             QHostAddress ( ui->edit_IPAdress->text() ),
                              ui->edit_Port->text().toUInt());
         }
+
+
         //choose TCP to sent
         else if(ui->btn_protocol->currentIndex() == PROTOCOL_TCP)
         {
@@ -52,11 +62,14 @@ void LoginDialog::on_btn_login_clicked()
                                      ui->edit_password->text()
                                     );
         }
+
+
     }
 }
 
 void LoginDialog::on_btn_exit_clicked()
 {
     this->close();
+    delete this;
 }
 

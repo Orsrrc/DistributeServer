@@ -1,6 +1,8 @@
 #ifndef LOGINDIALOG_H
 #define LOGINDIALOG_H
 
+#include <QWindow>
+#include <QWidget>
 #include <QDialog>
 #include <QMessageBox>
 #include <QDebug>
@@ -26,6 +28,8 @@ public:
 private slots:
     void on_btn_login_clicked();
     void on_btn_exit_clicked();
+
+
 private:
     Ui::LoginDialog *ui;
 };

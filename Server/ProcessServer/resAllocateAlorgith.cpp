@@ -11,48 +11,37 @@ using namespace std;
 }
 */
 
-int alorgith::Average(int ShardNum)
+int alorgith::Top_(int ShardNum, int SourceNum, const std::vector<int> &MaxNum, const std::vector<int> &Weight, double alpha, std::vector<double> &B)
 {
-    int SourceNum = 2;
-    vector<int> MaxNum = {3300, 3000};
-    vector<int> Weight = {5, 4};
-    double alpha = 0.5;
-    int RTX = 5;
-    int BlockSize = 10;
-    int BlockInterval = 1;
-    int SlotsInterval = 1;
-
-    vector<double> B(ShardNum, 0);
-    vector<double> P(SourceNum, 0);
-    vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0));
-
-    // Average Res. Allocation
-    for (int i = 0; i < ShardNum; ++i)
+    // Iterate over the range 1 to 0.5*ShardNum
+    for (int i = 1; i <= 0.5 * ShardNum; ++i)
     {
-        for (int k = 0; k < SourceNum; ++k)
+        // Iterate over the SourceNum
+        for (int k = 1; k <= SourceNum; ++k)
         {
-            p[i][k] = MaxNum[k] / ShardNum;
-            B[i] += pow(Weight[k] * p[i][k], alpha);
-            P[k] += p[i][k];
+            // Calculate p(i,k)
+            double p_ik = MaxNum[k - 1] / (0.5 * ShardNum); // Adjusting indices since C++ uses 0-based indexing
+            // Update B(i)
+            B[i - 1] += pow(Weight[k - 1] * p_ik, alpha); // Adjusting indices since C++ uses 0-based indexing
         }
     }
+    return OK;
+}
 
-    // Output the results
-    cout << "Resource Allocation:" << endl;
-    cout << "B: ";
-    for (double b : B)
+int alorgith::Average(int ShardNum, int SourceNum, const std::vector<int> &MaxNum, const std::vector<int> &Weight, double alpha, std::vector<double> &B, std::vector<std::vector<double>> &p)
+{
+    // Iterate over i from 1 to ShardNum
+    for (int i = 1; i <= ShardNum; ++i)
     {
-        cout << b << " ";
+        // Iterate over k from 1 to SourceNum
+        for (int k = 1; k <= SourceNum; ++k)
+        {
+            // Calculate p(i,k)
+            p[i - 1][k - 1] = MaxNum[k - 1] / static_cast<double>(ShardNum); // Adjusting indices and casting to double for division
+            // Update B(i)
+            B[i - 1] += pow(Weight[k - 1] * p[i - 1][k - 1], alpha); // Adjusting indices and using pow function for exponentiation
+        }
     }
-    cout << endl;
-    cout << "P: ";
-    for (double p_val : P)
-    {
-        cout << p_val << " ";
-    }
-    cout << endl;
-
-    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,57 +50,57 @@ int alorgith::Average(int ShardNum)
 
 int alorgith::Dualascent()
 {
+
+    // Initialize variables
     vector<double> x = {100, -120}; // Decision variable initialization
     vector<double> lambda = {0, 0}; // Lagrange multipliers initialization
-    int k = 1;
-    vector<vector<double>> G_v;      // Gradient vector history
-    vector<vector<double>> x_v;      // Decision variable history
-    vector<vector<double>> lambda_v; // Lagrange multipliers history
-    vector<double> L_v;              // Lagrangian function history
-    vector<double> f_v;              // Objective function history
+    vector<double> Grad_f(2);
+    vector<double> G_v, lambda_v, x_v, L_v, f_v;
     double tol = 1e-5;
-    double t_lambda = 0.1; // Lagrange multiplier update step size
-    double t_x = 0.1;      // Decision variable update step size
+    double t_lambda = 0.1; // Update step size for Lagrange multipliers
+    double t_x = 0.1;      // Update step size for decision variables
     int max_iteration = 10000;
+    int k = 1;
 
+    // Perform iterations
     for (int i = 1; i <= max_iteration; ++i)
     {
-        // Iterative update of decision variables x
+        // Update decision variables x
         x[0] -= t_x * (4 * (x[0] - 1) - lambda[0]);
         x[1] -= t_x * (2 * (x[1] + 2) - lambda[1]);
 
-        // Iterative update of Lagrange multipliers lambda
-        vector<double> Grad_f = {2 - x[0], -x[1]};
+        // Update Lagrange multipliers lambda
+        Grad_f[0] = 2 - x[0];
+        Grad_f[1] = -x[1];
         lambda[0] = max(lambda[0] + t_lambda * Grad_f[0], 0.0);
         lambda[1] = max(lambda[1] + t_lambda * Grad_f[1], 0.0);
 
-        // Calculate objective function and Lagrangian function
-        double f = 2 * pow((x[0] - 1), 2) + pow((x[1] + 2), 2);
+        // Calculate objective function value and Lagrangian
+        double f = 2 * pow(x[0] - 1, 2) + pow(x[1] + 2, 2);
         double L = f + lambda[0] * (2 - x[0]) + lambda[1] * (-x[1]);
 
-        // Record historical updates
-        G_v.push_back(Grad_f);
-        x_v.push_back(x);
-        lambda_v.push_back(lambda);
+        // Record historical update results
+        G_v.insert(G_v.end(), Grad_f.begin(), Grad_f.end());
+        x_v.insert(x_v.end(), x.begin(), x.end());
+        lambda_v.insert(lambda_v.end(), lambda.begin(), lambda.end());
         f_v.push_back(f);
         L_v.push_back(L);
 
-        // Termination condition check
+        // Termination condition
         if (i > 2 && abs(f - L) < tol)
             break;
 
-        k++;
+        k = i;
     }
 
     if (k == max_iteration)
-    {
-        cout << "Exceeded maximum iteration limit!" << endl;
-    }
+        cout << "Exceeded maximum number of iterations!" << endl;
 
     cout << "Number of iterations: " << k << endl;
     cout << "Optimal point: [" << x[0] << ", " << x[1] << "]" << endl;
+    cout << "Optimal value: " << L_v.back() << endl;
 
-    return 0;
+    return OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,123 +108,98 @@ int alorgith::Dualascent()
 //////////////////////////////////////////////////////DUALASCENTFL//////////////////////////////////////
 int alorgith::Dualascentfl()
 {
-    vector<double> x = {-10, 10};         // Decision variable initialization
+     // Initialize variables
+    vector<double> x = {-10, 10}; // Decision variable initialization
     vector<double> lambda = {1, 1, 1, 1}; // Lagrange multipliers initialization
-    int k = 1;
-    vector<vector<double>> G_v;      // Gradient vector history
-    vector<vector<double>> x_v;      // Decision variable history
-    vector<vector<double>> lambda_v; // Lagrange multipliers history
-    vector<double> L_v;              // Lagrangian function history
-    vector<double> f_v;              // Objective function history
+    vector<double> Grad_f(4);
+    vector<double> G_v, lambda_v, x_v, L_v, f_v;
     double tol = 1e-5;
-    double t_lambda = 0.01; // Lagrange multiplier update step size
+    double t_lambda = 0.01; // Update step size for Lagrange multipliers
     double epsilon = 0.1;
-    double t_x_1 = 0.1; // Decision variable x1 update step size
-    double t_x_2 = 0.1; // Decision variable x2 update step size
+    double t_x_1 = 0.1; // Update step size for decision variable x1
+    double t_x_2 = 0.1; // Update step size for decision variable x2
     int max_iteration = 10000;
+    int k = 1;
 
-    for (int i = 1; i <= max_iteration; ++i)
-    {
-        // Iterative update of decision variables x
-        x[0] -= t_x_1 * (-pow(x[0], -2) + 2 * x[0] - lambda[0] + lambda[1]);
-        x[1] -= t_x_2 * (-pow(x[1], -2) + 2 * x[1] - lambda[2] + lambda[3]);
+    // Perform iterations
+    for (int i = 1; i <= max_iteration; ++i) {
+        // Update decision variables x
+        x[0] -= t_x_1 * (-1 / pow(x[0], 2) + 2 * x[0] - lambda[0] + lambda[1]);
+        x[1] -= t_x_2 * (-1 / pow(x[1], 2) + 2 * x[1] - lambda[2] + lambda[3]);
 
-        // Iterative update of Lagrange multipliers lambda
-        vector<double> Grad_f = {-x[0], x[0] - 1, -x[1], x[1] - 1};
-        for (int j = 0; j < 4; ++j)
-        {
+        // Update Lagrange multipliers lambda
+        Grad_f[0] = -x[0];
+        Grad_f[1] = x[0] - 1;
+        Grad_f[2] = -x[1];
+        Grad_f[3] = x[1] - 1;
+        for (int j = 0; j < 4; ++j) {
             lambda[j] = max(lambda[j] + t_lambda * Grad_f[j], 0.0);
         }
 
-        // Calculate objective function and Lagrangian function
+        // Calculate objective function value and Lagrangian
         double f = 1 / x[0] + pow(x[0], 2) + 1 / x[1] + pow(x[1], 2);
         double L = f + lambda[0] * (-x[0]) + lambda[1] * (x[0] - 1) + lambda[2] * (-x[1]) + lambda[3] * (x[1] - 1);
 
-        // Record historical updates
-        G_v.push_back(Grad_f);
-        x_v.push_back(x);
-        lambda_v.push_back(lambda);
+        // Record historical update results
+        G_v.insert(G_v.end(), Grad_f.begin(), Grad_f.end());
+        x_v.insert(x_v.end(), x.begin(), x.end());
+        lambda_v.insert(lambda_v.end(), lambda.begin(), lambda.end());
         f_v.push_back(f);
         L_v.push_back(L);
 
-        // Termination condition check
-        if (i > 2 && abs(f - L) < tol && Grad_f[0] <= epsilon && Grad_f[1] <= epsilon && Grad_f[2] <= epsilon && Grad_f[3] <= epsilon)
+        // Termination condition
+        if (k > 2 && abs(f - L) < tol && Grad_f[0] <= epsilon && Grad_f[1] <= epsilon && Grad_f[2] <= epsilon && Grad_f[3] <= epsilon)
             break;
 
-        k++;
+        k = i;
     }
 
     if (k == max_iteration)
-        cout << "Exceeded maximum iteration limit!" << endl;
+        cout << "Exceeded maximum number of iterations!" << endl;
 
     cout << "Number of iterations: " << k << endl;
     cout << "Optimal point: [" << x[0] << ", " << x[1] << "]" << endl;
+    cout << "Optimal value: " << L_v.back() << endl;
 
-    return 0;
+    return OK;
 }
 
 //////////////////////////////////////////////////////////ELASTIC////////////////////////////////////////////////////////////////////////////////////////
-pair<vector<double>, vector<double>> alorgith::Elastic(double Q, vector<double> Z, double V, int ShardNum)
+int alorgith::Elastic()
 {
-    // Define parameters
+    // Given parameters
+    vector<double> MaxNum = {3300, 3000};
     int SourceNum = 2;
-    vector<double> MaxNum = {3300, 3000}; // Maximum resources
-    vector<double> Weight = {5, 4};       // Resource weights
+    vector<double> Weight = {5, 4};
     double alpha = 0.5;
-    double RTX = 5;
-    double BlockSize = 10;
-    double BlockInterval = 1;
-    double SlotsInterval = 1;
+    int ShardNum = 10; // Assuming ShardNum is defined elsewhere
+    double RTX = 5; // Assuming RTX is defined elsewhere
 
-    // Initialize B and P vectors
+    // Initialize variables
     vector<double> B(ShardNum, 0.0);
     vector<double> P(SourceNum, 0.0);
+    double V = 0; // Assuming V is defined elsewhere
+    vector<double> Q(ShardNum, 0.0); // Assuming Q is defined elsewhere
+    double Z1 = 0, Z2 = 0; // Assuming Z1 and Z2 are defined elsewhere
 
-    // Initialize p matrix
+    // Calculate values
     vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0.0));
 
-    // Calculate resource allocation
-    for (int i = 0; i < ShardNum; ++i)
-    {
-        for (int k = 0; k < SourceNum; ++k)
-        {
-            p[i][k] = pow(((V + Z[k]) / (alpha * pow(Weight[k], alpha) * (Q + RTX * V))), 1 / (alpha - 1));
+    for (int i = 0; i < ShardNum; ++i) {
+        for (int k = 0; k < SourceNum; ++k) {
+            double numerator = (V + (k == 0 ? Z1 : Z2));
+            double denominator = alpha * pow(Weight[k], alpha) * (Q[i] + RTX * V);
+            p[i][k] = pow(numerator / denominator, 1 / (alpha - 1));
             B[i] += pow(Weight[k] * p[i][k], alpha);
             P[k] += p[i][k];
         }
     }
-
-    // Return B and P vectors
-    return make_pair(B, P);
+    // Output results or use them as needed
+    return OK;
 }
 
 int alorgith::invoke_elastic()
 {
-    // Example usage
-    double Q = 0;              // Current queue length
-    vector<double> Z = {0, 0}; // Dummy values for Z
-    double V = 30;             // Queue length parameter
-    int ShardNum = 4;          // Number of shards
-
-    // Perform Elastic resource allocation
-    pair<vector<double>, vector<double>> result = Elastic(Q, Z, V, ShardNum);
-
-    // Output B and P vectors
-    cout << "B vector:" << endl;
-    for (auto b : result.first)
-    {
-        cout << b << " ";
-    }
-    cout << endl;
-
-    cout << "P vector:" << endl;
-    for (auto p : result.second)
-    {
-        cout << p << " ";
-    }
-    cout << endl;
-
-    return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,62 +208,39 @@ int alorgith::invoke_elastic()
 
 int alorgith::Longest(vector<int> &Q, int ShardNum, vector<int> &B, vector<int> &P)
 {
+    // Given parameters
+    vector<double> MaxNum = {3300, 3000};
     int SourceNum = 2;
-    vector<int> MaxNum = {3300, 3000};
-    vector<int> Weight = {5, 4};
+    vector<double> Weight = {5, 4};
     double alpha = 0.5;
-    int RTX = 5;
-    int BlockSize = 10;
+    double RTX = 5;
+    int ShardNum = 10; // Assuming ShardNum is defined elsewhere
+    vector<double> Q(ShardNum); // Assuming Q is defined elsewhere
 
-    B.assign(ShardNum, 0);
-    P.assign(SourceNum, 0);
-    vector<vector<int>> p(ShardNum, vector<int>(SourceNum, 0));
+    // Initialize variables
+    vector<double> B(ShardNum, 0.0);
+    vector<double> P(SourceNum, 0.0);
+    vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0.0));
 
-    // Sort queues in descending order
-    vector<pair<int, int>> queue_indices;
-    for (int i = 0; i < ShardNum; ++i)
-    {
-        queue_indices.push_back({Q[i], i});
-    }
-    sort(queue_indices.rbegin(), queue_indices.rend());
+    // Sort Q in descending order and get the indices
+    vector<int> I(ShardNum);
+    iota(I.begin(), I.end(), 0); // Fill I with indices 0, 1, 2, ..., ShardNum - 1
+    sort(I.begin(), I.end(), [&](int i, int j) { return Q[i] > Q[j]; });
 
-    // Allocate resources to the shard with the longest queue
-    for (int k = 0; k < SourceNum; ++k)
-    {
-        int shard_index = queue_indices[0].second;
-        p[shard_index][k] = MaxNum[k];
-        B[shard_index] += pow((Weight[k] * p[shard_index][k]), alpha);
+    // Assign values based on sorted Q
+    for (int k = 0; k < SourceNum; ++k) {
+        p[I[0]][k] = MaxNum[k];
+        B[I[0]] += pow(Weight[k] * p[I[0]][k], alpha);
         P[k] = MaxNum[k];
     }
 
-    return 0;
+    // Output results or use them as needed
+    return OK;
+
 }
 
 int alorgith::invoke_longest()
 {
-    int ShardNum = 4;
-    vector<int> Q = {10, 20, 15, 25}; // Example queue lengths
-
-    // Perform resource allocation
-    vector<int> B, P;
-    Longest(Q, ShardNum, B, P);
-
-    // Print the allocated resources
-    cout << "Allocated resources:\n";
-    cout << "B: ";
-    for (int i = 0; i < ShardNum; ++i)
-    {
-        cout << B[i] << " ";
-    }
-    cout << "\n";
-    cout << "P: ";
-    for (int i = 0; i < P.size(); ++i)
-    {
-        cout << P[i] << " ";
-    }
-    cout << "\n";
-
-    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,57 +249,56 @@ int alorgith::invoke_longest()
 
 int alorgith::Random(int ShardNum, vector<int> &B, vector<int> &P)
 {
+     // Given parameters
     int SourceNum = 2;
     vector<int> MaxNum = {3300, 3000};
     vector<int> Weight = {5, 4};
     double alpha = 0.5;
+    double RTX = 5;
+    int ShardNum = 24;
+    double BlockSize = 1;
+    double BlockInterval = 1;
+    double SlotsInterval = 1;
 
-    B.assign(ShardNum, 0);
-    P.assign(SourceNum, 0);
-    vector<vector<int>> p(ShardNum, vector<int>(SourceNum, 0));
+    // Initialize variables
+    vector<double> B(ShardNum, 0.0);
+    vector<double> P(SourceNum, 0.0);
+    vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0.0));
 
-    // Generate random maximum resource values
-    MaxNum[0] = rand() % 1500 + 1000; // Random value between 1000 and 2500
-    MaxNum[1] = rand() % 1001 + 1000; // Random value between 1000 and 2000
+    // Generate random MaxNum values
+    MaxNum[0] = rand() % (2500 - 1000 + 1) + 1000;
+    MaxNum[1] = rand() % (2000 - 1000 + 1) + 1000;
 
-    // Allocate resources randomly
-    for (int i = 0; i < ShardNum; ++i)
-    {
-        for (int k = 0; k < SourceNum; ++k)
-        {
-            p[i][k] = rand() % (MaxNum[k] + 1); // Random value between 0 and MaxNum[k]
-            B[i] += pow((Weight[k] * p[i][k]), alpha);
+    // Generate random values for A and normalize
+    vector<double> A(ShardNum);
+    double sumA = 0.0;
+    for (int i = 0; i < ShardNum; ++i) {
+        A[i] = static_cast<double>(rand()) / RAND_MAX; // Generate a random number between 0 and 1
+        sumA += A[i];
+    }
+    for (int i = 0; i < ShardNum; ++i) {
+        A[i] /= sumA; // Normalize A
+    }
+
+    // Calculate p, B, and P
+    for (int i = 0; i < ShardNum; ++i) {
+        for (int k = 0; k < SourceNum; ++k) {
+            p[i][k] = MaxNum[k] * A[i];
+            B[i] += pow(Weight[k] * p[i][k], alpha);
             P[k] += p[i][k];
         }
     }
 
-    return 0;
+    // Output results or use them as needed
+    return OK;
+
+
+
+
 }
 
 int alorgith::invokd_random()
 {
-    int ShardNum = 4;
-
-    // Perform random resource allocation
-    vector<int> B, P;
-    Random(ShardNum, B, P);
-
-    // Print the allocated resources
-    cout << "Allocated resources:\n";
-    cout << "B: ";
-    for (int i = 0; i < ShardNum; ++i)
-    {
-        cout << B[i] << " ";
-    }
-    cout << "\n";
-    cout << "P: ";
-    for (int i = 0; i < P.size(); ++i)
-    {
-        cout << P[i] << " ";
-    }
-    cout << "\n";
-
-    return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +543,6 @@ int alorgith::resallocation_lagrange(vector<int> Q, int V)
     return 0;
 }
 
-
 /*
     vector<int> Q = {1, 2, 3, 4}; // Example values for Q
     int V = 100; // Example value for V
@@ -613,7 +552,7 @@ int alorgith::resallocation_lagrange(vector<int> Q, int V)
 
 int alorgith::resallocation_without_blockinterval(vector<int> Q, int V, int ShardNum)
 {
-        // Initialize parameters
+    // Initialize parameters
     int SourceNum = 2;
     vector<int> MaxNum = {200, 150};
     vector<int> Weight = {5, 4};
@@ -635,8 +574,10 @@ int alorgith::resallocation_without_blockinterval(vector<int> Q, int V, int Shar
     vector<int> gamma(SourceNum, 0); // Initialize gamma vector
 
     // Resource allocation
-    for (int i = 0; i < ShardNum; ++i) {
-        for (int k = 0; k < SourceNum; ++k) {
+    for (int i = 0; i < ShardNum; ++i)
+    {
+        for (int k = 0; k < SourceNum; ++k)
+        {
             p[i][k] = pow(V / (alpha * pow(Weight[k], alpha) * (Q[i] + RTX * V)), 1 / (alpha - 1));
             B[i] += pow(Weight[k] * p[i][k], alpha);
             P[k] += p[i][k];
@@ -644,22 +585,28 @@ int alorgith::resallocation_without_blockinterval(vector<int> Q, int V, int Shar
     }
 
     // Check constraints
-    for (int k = 0; k < SourceNum; ++k) {
-        if (P[k] > MaxNum[k]) {
+    for (int k = 0; k < SourceNum; ++k)
+    {
+        if (P[k] > MaxNum[k])
+        {
             cout << "Exceeded resource constraint: " << k << endl;
             flag1[k] = 1;
         }
     }
 
     // Resource allocation loop
-    for (int j = 0; j < max_iteration; ++j) {
+    for (int j = 0; j < max_iteration; ++j)
+    {
         vector<int> GB(ShardNum, 0);
         double f = 0;
         double Lk = 0;
 
-        for (int i = 0; i < ShardNum; ++i) {
-            for (int k = 0; k < SourceNum; ++k) {
-                if (flag1[k] == 1) {
+        for (int i = 0; i < ShardNum; ++i)
+        {
+            for (int k = 0; k < SourceNum; ++k)
+            {
+                if (flag1[k] == 1)
+                {
                     p[i][k] = pow((V - gamma[k]) / (alpha * pow(Weight[k], alpha) * (Q[i] + RTX * V)), 1 / (alpha - 1));
                     GB[i] += pow(Weight[k] * p[i][k], alpha);
                 }
@@ -667,21 +614,23 @@ int alorgith::resallocation_without_blockinterval(vector<int> Q, int V, int Shar
             }
         }
 
-        for (int i = 0; i < ShardNum; ++i) 
+        for (int i = 0; i < ShardNum; ++i)
         {
             f += (Q[i] + V * RTX) * GB[i] - V * P[i];
         }
 
-        if (abs(f) < tol) {
+        if (abs(f) < tol)
+        {
             break;
         }
     }
 
     // Output
     cout << "Resource allocation: " << endl;
-    for (int i = 0; i < ShardNum; ++i) 
+    for (int i = 0; i < ShardNum; ++i)
     {
-        for (int k = 0; k < SourceNum; ++k) {
+        for (int k = 0; k < SourceNum; ++k)
+        {
             cout << p[i][k] << " ";
         }
         cout << endl;

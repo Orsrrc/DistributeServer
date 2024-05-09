@@ -20,7 +20,6 @@ public:
     ~TcpSocket();
     int getSocketfd()
     {
-
         return Socketfd;
     }
 
@@ -69,7 +68,7 @@ public:
         return sendBuffer;
     }
 
-    int initSocket(int protocol);
+    int createSocket(int protocol);
     int receiver(int protocol);
     int sender(int protocol);
     int broadcastIP(std::string port, std::string ServerID);
@@ -77,6 +76,7 @@ public:
     std::string getLocalID();
 
 private:
+    TcpSocket *TcpSenderSocket;
     TcpSocket *TcpReceiverSocket;
     UdpSocket *UdpSenderSocket;
     UdpSocket *UdpReceiverSocket;
@@ -84,9 +84,9 @@ private:
     struct sockaddr_in client;
 
     int clientSocketfd = 0;
-    char recvBuffer[128];
+    char recvBuffer[BUFFER_SIZE];
     char resAddress[64];
-    char sendBuffer[128];
+    char sendBuffer[BUFFER_SIZE];
 };
 
 class IPAddress
@@ -96,35 +96,24 @@ class IPAddress
 ///////////////////////////////////////////////////////////////////TCP ////////////////////////////////////////////////////////////////////////////////////////
 TcpSocket::TcpSocket(const std::string IpAddress, const std::string Port)
 {
+    int opt = 1;
     Socketfd = socket(AF_INET, SOCK_STREAM, 0);
     std::cout << "creating TCP Socket...." << std::endl;
     if (Socketfd == -1)
     {
-        std::cout << "creat socket failed....reason is";
         perror("socket");
-        std::cout << std::endl;
         exit(EXIT_FAILURE);
     }
     else
     {
-        std::cout << "create  socket successed! socketfd is: " << Socketfd << std::endl;
+        std::cout << "create TCP socket successed! socketfd is: " << Socketfd << std::endl;
     }
-    struct sockaddr_in server;
-    bzero(&server, sizeof(server));
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(SERVER_PORT);
-    // 绑定套接字
-    if (bind(Socketfd, (struct sockaddr *)&server, sizeof(server)) == -1)
+
+    if (setsockopt(Socketfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
     {
-        perror("bind");
-        std::cout << "bind socket failed......";
-        std::cout << std::endl;
-        close(Socketfd);
+        perror("setsockopt");
         exit(EXIT_FAILURE);
     }
-    
-    std::cout << "bind IP address successed!" << std::endl;
 }
 
 TcpSocket::~TcpSocket()
@@ -142,7 +131,7 @@ UdpSocket::UdpSocket(const std::string IpAddress, const std::string Port)
     std::cout << "creating UDP Socket...." << std::endl;
     if (Socketfd == -1)
     {
-        std::cout << "create socket failed....reason is";
+        std::cout << "create UDP socket failed....reason is";
         perror("socket");
         std::cout << std::endl;
         close(Socketfd);
@@ -181,7 +170,10 @@ UdpSocket::~UdpSocket()
 inline Network::Network(const std::string IpAddress, const std::string port)
 {
     std::cout << "init Network" << std::endl;
-    initSocket(PROTOCOL_UDP);
+    createSocket(PROTOCOL_UDP);
+    std::cout << std::endl;
+    sleep(1);
+    createSocket(PROTOCOL_TCP);
 }
 
 inline Network::~Network()
@@ -192,7 +184,7 @@ inline Network::~Network()
     delete TcpReceiverSocket, UdpReceiverSocket, UdpSenderSocket;
 }
 
-inline int Network::initSocket(int protocol)
+inline int Network::createSocket(int protocol)
 {
     if (protocol == PROTOCOL_TCP)
     {
@@ -200,7 +192,7 @@ inline int Network::initSocket(int protocol)
     }
     else if (protocol == PROTOCOL_UDP)
     {
-       //UdpSenderSocket = new UdpSocket();
+        // UdpSenderSocket = new UdpSocket();
         UdpReceiverSocket = new UdpSocket();
     }
     else
@@ -208,7 +200,7 @@ inline int Network::initSocket(int protocol)
         perror("error protocol type");
         exit(EXIT_FAILURE);
     }
-    std::cout << "init socket successed" << std::endl;
+    
     return OK;
 }
 
@@ -218,21 +210,62 @@ inline int Network::receiver(int protocol)
     bool isflag = true;
     if (protocol == PROTOCOL_TCP)
     {
+        
+        struct sockaddr_in server;
+        bzero(&server, sizeof(server));
+        server.sin_family = AF_INET;
+        server.sin_addr.s_addr = INADDR_ANY;
+        server.sin_port = htons(SERVER_PORT);
 
-        std::cout << "listening:" << TcpReceiverSocket->getSocketfd() << std::endl;
-        if (listen(TcpReceiverSocket->getSocketfd(), 128) == -1)
+        int addrlen = sizeof(server);
+        int Socketfd = TcpReceiverSocket->getSocketfd();
+        int client_socket = -1;
+        int valread = 0;
+
+        // 绑定套接字
+        if (bind(Socketfd, (struct sockaddr *)&server, sizeof(server)) == -1)
         {
-            perror("listen");
-            close(TcpReceiverSocket->getSocketfd());
+            perror("bind");
+            close(Socketfd);
             exit(EXIT_FAILURE);
         }
+        std::cout << "bind IP address successed!" << std::endl;
+
+        std::cout << "listening:" << Socketfd << std::endl;
+        if (listen(Socketfd, 128) == -1)
+        {
+            perror("listen");
+            close(Socketfd);
+            exit(EXIT_FAILURE);
+        }
+
+        if ((client_socket = accept(Socketfd, (struct sockaddr *)&server,
+                                 (socklen_t *)&addrlen)) < 0)
+        {
+            perror("accept");
+            exit(EXIT_FAILURE);
+        }
+
+        std::cout << "receive from:" << inet_ntop(AF_INET, &client.sin_addr.s_addr, resAddress, sizeof(resAddress)) << " "
+                      << "port:" << ntohs(client.sin_port) << std::endl;
+
+
+
+        valread = read(client_socket, recvBuffer, BUFFER_SIZE);
+        printf("%s\n", recvBuffer);
+
+
+        //send(client_socket, hello, strlen(hello), 0);
+        //printf("Hello message sent\n");
+        return 0;
+
+        /*
         while (isflag)
         {
             socklen_t length = sizeof(client);
             std::cout << "waiting for connect....." << std::endl;
             clientSocketfd = accept(TcpReceiverSocket->getSocketfd(), (struct sockaddr *)&client, &length);
-            std::cout << "receive from:" << inet_ntop(AF_INET, &client.sin_addr.s_addr, resAddress, sizeof(resAddress)) << " "
-                      << "port:" << ntohs(client.sin_port) << std::endl;
+            
             if (clientSocketfd == -1)
             {
                 perror("accept");
@@ -254,6 +287,7 @@ inline int Network::receiver(int protocol)
             }
             std::cout << recvBuffer << std::endl;
         }
+        */
     }
     else if (protocol == PROTOCOL_UDP)
     {
