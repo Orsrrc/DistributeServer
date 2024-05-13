@@ -41,4 +41,7 @@ int main()
 			strncpy(IPAddress, temp, 10);
 		}
 	}
+
+	std::cout << "ServerName:" << ServerName << "\n" << "ID" << ID << "IP:" << IPAddress << std::endl; 
+
 }

@@ -40,9 +40,8 @@ int Network::sendByTcp(QString Username, QString Password)
         //package send message
         QString sendMessage;
         sendMessage.assign(Username+'\n'+Password);
-        QByteArray datagram = sendMessage.toUtf8();
 
-        if( TcpSenderSocket->write(datagram) == -1 )
+        if( TcpSenderSocket->write(sendMessage.toUtf8()) == -1 )
         {
             qDebug() << "Send Error\n"<< "reason is"  <<   TcpSenderSocket->error();
             return ERROR;

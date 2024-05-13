@@ -259,35 +259,7 @@ inline int Network::receiver(int protocol)
         //printf("Hello message sent\n");
         return 0;
 
-        /*
-        while (isflag)
-        {
-            socklen_t length = sizeof(client);
-            std::cout << "waiting for connect....." << std::endl;
-            clientSocketfd = accept(TcpReceiverSocket->getSocketfd(), (struct sockaddr *)&client, &length);
-            
-            if (clientSocketfd == -1)
-            {
-                perror("accept");
-                close(TcpReceiverSocket->getSocketfd());
-                exit(EXIT_FAILURE);
-            }
-            length = read(clientSocketfd, recvBuffer, sizeof(recvBuffer) - 1);
-            if (length == -1)
-            {
-                perror("read");
-                close(UdpReceiverSocket->getSocketfd());
-                close(clientSocketfd);
-                exit(EXIT_FAILURE);
-            }
-            else if (length == 0)
-            {
-                std::cout << "receive message have done" << std::endl;
-                isflag = false;
-            }
-            std::cout << recvBuffer << std::endl;
-        }
-        */
+        
     }
     else if (protocol == PROTOCOL_UDP)
     {
@@ -326,6 +298,7 @@ inline int Network::receiver(int protocol)
     }
     return OK;
 }
+
 
 inline int Network::sender(int protocol)
 {

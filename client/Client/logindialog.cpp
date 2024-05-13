@@ -50,7 +50,6 @@ void LoginDialog::on_btn_login_clicked()
                              ui->edit_Port->text().toUInt());
         }
 
-
         //choose TCP to sent
         else if(ui->btn_protocol->currentIndex() == PROTOCOL_TCP)
         {
