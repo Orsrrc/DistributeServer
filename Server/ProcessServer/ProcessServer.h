@@ -24,6 +24,7 @@ class ProcessServer
 
     std::tuple<std::vector<double>, std::vector<double>> stop(std::vector<double> Q, int ShardNum);
 private:
+
 };
 
 #endif //__PROCESS__SERVER__H_

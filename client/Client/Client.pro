@@ -1,5 +1,7 @@
 QT       += core gui
 QT       += network
+QT       += charts
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -12,22 +14,28 @@ SOURCES += \
     ClientSocket.cpp \
     logindialog.cpp \
     main.cpp \
-    widget.cpp
+    mainwindow.cpp
 
 HEADERS += \
     ClientSocket.h \
     common.h \
     logindialog.h \
-    widget.h
+    mainwindow.h
 
 FORMS += \
     logindialog.ui \
-    widget.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+
+
 DISTFILES += \
     ../../README.md
+
+
+
+

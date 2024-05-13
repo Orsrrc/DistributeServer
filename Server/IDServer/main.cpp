@@ -42,6 +42,6 @@ int main()
 		}
 	}
 
-	std::cout << "ServerName:" << ServerName << "\n" << "ID" << ID << "IP:" << IPAddress << std::endl; 
+	std::cout << "ServerName:" << ServerName << "\n" << "ID" << ID  << " \n"<< "IP:" << IPAddress << std::endl; 
 
 }

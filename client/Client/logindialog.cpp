@@ -62,7 +62,14 @@ void LoginDialog::on_btn_login_clicked()
                                     );
         }
 
-
+        if(true) //login success
+        {
+            accept();
+        }
+        else
+        {
+            QMessageBox::warning(this,"warning","Username or Password is wrong");
+        }
     }
 }
 
