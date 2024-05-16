@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("分片许可链仿真模拟系统");
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
 
@@ -20,6 +20,44 @@ MainWindow::MainWindow(QWidget *parent)
     leftWidget->setStyleSheet("background-color: lightGray;");
 
 
+
+    QHBoxLayout *comboBoxLayout = new QHBoxLayout(leftWidget);
+
+    QLabel *label = new QLabel("资源分配算法:", this);
+
+    QComboBox *comboBox = new QComboBox(this);
+    comboBox->addItem("Top_S");
+    comboBox->addItem("Average");
+    comboBox->addItem("Dualascent");
+    comboBox->addItem("Dualascentfl");
+    comboBox->addItem("Elastic");
+    comboBox->addItem("Longest");
+    comboBox->addItem("Random");
+
+
+    comboBoxLayout->addWidget(label);
+    comboBoxLayout->addWidget(comboBox);
+    comboBoxLayout->setSpacing(0); // Set spacing to 0
+    leftLayout->addLayout(comboBoxLayout);
+
+    connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::comboBoxIndexChanged);
+
+    // Create input widgets for each option
+    for (int i = 0; i < 7; ++i) {
+        QVector<QPair<QLabel*, QLineEdit*>> optionInputWidgets;
+        for (int j = 0; j < 5; ++j) {
+            QLineEdit *input = new QLineEdit(this);
+            optionInputWidgets.append(qMakePair(new QLabel(this), input));
+           leftLayout->addWidget(optionInputWidgets.back().first);
+             leftLayout->addWidget(optionInputWidgets.back().second);
+            optionInputWidgets.back().first->hide(); // Initially hide all labels
+            optionInputWidgets.back().second->hide(); // Initially hide all input widgets
+        }
+        inputWidgets.append(optionInputWidgets);
+    }
+
+    QPushButton *btn_submmit = new QPushButton("发送",this);
+    leftLayout->addWidget(btn_submmit);
 
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -36,31 +74,31 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 创建四个按钮
     QToolBar *toolBar = new QToolBar("Toolbar", rightWidget);
-    QPushButton *button1 = new QPushButton("Performance evaluation while varying parameter V");
-    QPushButton *button2 = new QPushButton("Performance comparison with baseline algorithms.");
-    QPushButton *button3 = new QPushButton("Continued bursty-TX injection attack against all network shards");
-    QPushButton *button4 = new QPushButton("Drastic bursty-TX injection attack against a single network shard");
-    toolBar->addWidget(button1);
-    toolBar->addWidget(button2);
-    toolBar->addWidget(button3);
-    toolBar->addWidget(button4);
+    QPushButton *btn_vary_V = new QPushButton("Performance evaluation while varying parameter V");
+    QPushButton *btn_performance_comparison = new QPushButton("Performance comparison with baseline algorithms.");
+    QPushButton *btn_attack_all_shards = new QPushButton("Continued bursty-TX injection attack against all network shards");
+    QPushButton *btn_attack_single_shard = new QPushButton("Drastic bursty-TX injection attack against a single network shard");
+    toolBar->addWidget(btn_vary_V);
+    toolBar->addWidget(btn_performance_comparison);
+    toolBar->addWidget(btn_attack_all_shards);
+    toolBar->addWidget(btn_attack_single_shard);
 
     // 创建堆叠窗口
     QStackedWidget *stackedWidget = new QStackedWidget(rightWidget);
-    QWidget *window1 = createWindow();
-    QWidget *window2 = createWindow();
-    QWidget *window3 = createWindow();
-    QWidget *window4 = createWindow();
-    stackedWidget->addWidget(window1);
-    stackedWidget->addWidget(window2);
-    stackedWidget->addWidget(window3);
-    stackedWidget->addWidget(window4);
+    QWidget *win_vary_V = createWindow();
+    QWidget *win_performance_comparison = createWindow();
+    QWidget *win_attack_all_shards = createWindow();
+    QWidget *win_attack_single_shard = createWindow();
+    stackedWidget->addWidget(win_vary_V);
+    stackedWidget->addWidget(win_performance_comparison);
+    stackedWidget->addWidget(win_attack_all_shards);
+    stackedWidget->addWidget(win_attack_single_shard);
 
     // 连接按钮的点击信号和堆叠窗口的切换槽函数
-    connect(button1, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(0); });
-    connect(button2, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(1); });
-    connect(button3, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(2); });
-    connect(button4, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(3); });
+    connect(btn_vary_V, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(0); });
+    connect(btn_performance_comparison, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(1); });
+    connect(btn_attack_all_shards, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(2); });
+    connect(btn_attack_single_shard, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(3); });
 
     // 将工具栏和堆叠窗口添加到右侧布局中
     rightLayout->addWidget(toolBar);
@@ -123,8 +161,6 @@ QWidget *MainWindow::createWindow()
     chart2->addSeries(series2);
     chart3->addSeries(series3);
     chart4->addSeries(series4);
-
-
 
 
 

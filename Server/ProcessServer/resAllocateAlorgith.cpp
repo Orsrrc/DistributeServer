@@ -11,8 +11,11 @@ using namespace std;
 }
 */
 
-int alorgith::Top_(int ShardNum, int SourceNum, const std::vector<int> &MaxNum, const std::vector<int> &Weight, double alpha, std::vector<double> &B)
+int alorgith::Top_S(int ShardNum, int SourceNum, double alpha)
 {
+    std::vector<double> MaxNum = {3300, 3000};
+    std::vector<double> Weight = {5, 4};
+    vector<double> B(ShardNum, 0.0);
     // Iterate over the range 1 to 0.5*ShardNum
     for (int i = 1; i <= 0.5 * ShardNum; ++i)
     {
@@ -28,8 +31,12 @@ int alorgith::Top_(int ShardNum, int SourceNum, const std::vector<int> &MaxNum, 
     return OK;
 }
 
-int alorgith::Average(int ShardNum, int SourceNum, const std::vector<int> &MaxNum, const std::vector<int> &Weight, double alpha, std::vector<double> &B, std::vector<std::vector<double>> &p)
+int alorgith::Average(int ShardNum, int SourceNum, double alpha)
 {
+    std::vector<double> MaxNum = {3300, 3000};
+    std::vector<double> Weight = {5, 4};
+    vector<double> B(ShardNum, 0.0);
+    vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0.0));
     // Iterate over i from 1 to ShardNum
     for (int i = 1; i <= ShardNum; ++i)
     {
@@ -48,7 +55,13 @@ int alorgith::Average(int ShardNum, int SourceNum, const std::vector<int> &MaxNu
 
 ////////////////////////////////////////////////DUALASCENT//////////////////////////////////////////////////////
 
-int alorgith::Dualascent()
+int alorgith::Dualascent(int max_iteration,
+                         double tol,
+                         double t_lambda, // Update step size for Lagrange multipliers
+                         double t_x       // Update step size for decision variables
+
+)
+
 {
 
     // Initialize variables
@@ -56,10 +69,6 @@ int alorgith::Dualascent()
     vector<double> lambda = {0, 0}; // Lagrange multipliers initialization
     vector<double> Grad_f(2);
     vector<double> G_v, lambda_v, x_v, L_v, f_v;
-    double tol = 1e-5;
-    double t_lambda = 0.1; // Update step size for Lagrange multipliers
-    double t_x = 0.1;      // Update step size for decision variables
-    int max_iteration = 10000;
     int k = 1;
 
     // Perform iterations
@@ -89,7 +98,6 @@ int alorgith::Dualascent()
         // Termination condition
         if (i > 2 && abs(f - L) < tol)
             break;
-
         k = i;
     }
 
@@ -99,30 +107,32 @@ int alorgith::Dualascent()
     cout << "Number of iterations: " << k << endl;
     cout << "Optimal point: [" << x[0] << ", " << x[1] << "]" << endl;
     cout << "Optimal value: " << L_v.back() << endl;
-
     return OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////DUALASCENTFL//////////////////////////////////////
-int alorgith::Dualascentfl()
+int alorgith::Dualascentfl(
+    int max_iteration,
+    double tol,
+    double t_lambda, // Update step size for Lagrange multipliers
+    double epsilon,
+    double t_x_1, // Update step size for decision variable x1
+    double t_x_2  // Update step size for decision variable x2
+
+)
 {
-     // Initialize variables
-    vector<double> x = {-10, 10}; // Decision variable initialization
+    // Initialize variables
+    vector<double> x = {-10, 10};         // Decision variable initialization
     vector<double> lambda = {1, 1, 1, 1}; // Lagrange multipliers initialization
     vector<double> Grad_f(4);
     vector<double> G_v, lambda_v, x_v, L_v, f_v;
-    double tol = 1e-5;
-    double t_lambda = 0.01; // Update step size for Lagrange multipliers
-    double epsilon = 0.1;
-    double t_x_1 = 0.1; // Update step size for decision variable x1
-    double t_x_2 = 0.1; // Update step size for decision variable x2
-    int max_iteration = 10000;
-    int k = 1;
 
+    int k = 1;
     // Perform iterations
-    for (int i = 1; i <= max_iteration; ++i) {
+    for (int i = 1; i <= max_iteration; ++i)
+    {
         // Update decision variables x
         x[0] -= t_x_1 * (-1 / pow(x[0], 2) + 2 * x[0] - lambda[0] + lambda[1]);
         x[1] -= t_x_2 * (-1 / pow(x[1], 2) + 2 * x[1] - lambda[2] + lambda[3]);
@@ -132,7 +142,8 @@ int alorgith::Dualascentfl()
         Grad_f[1] = x[0] - 1;
         Grad_f[2] = -x[1];
         Grad_f[3] = x[1] - 1;
-        for (int j = 0; j < 4; ++j) {
+        for (int j = 0; j < 4; ++j)
+        {
             lambda[j] = max(lambda[j] + t_lambda * Grad_f[j], 0.0);
         }
 
@@ -165,28 +176,25 @@ int alorgith::Dualascentfl()
 }
 
 //////////////////////////////////////////////////////////ELASTIC////////////////////////////////////////////////////////////////////////////////////////
-int alorgith::Elastic()
+int alorgith::Elastic(int SourceNum, int ShardNum, double alpha, double RTX, double V, double Z1, double Z2)
 {
     // Given parameters
     vector<double> MaxNum = {3300, 3000};
-    int SourceNum = 2;
+
     vector<double> Weight = {5, 4};
-    double alpha = 0.5;
-    int ShardNum = 10; // Assuming ShardNum is defined elsewhere
-    double RTX = 5; // Assuming RTX is defined elsewhere
 
     // Initialize variables
     vector<double> B(ShardNum, 0.0);
     vector<double> P(SourceNum, 0.0);
-    double V = 0; // Assuming V is defined elsewhere
     vector<double> Q(ShardNum, 0.0); // Assuming Q is defined elsewhere
-    double Z1 = 0, Z2 = 0; // Assuming Z1 and Z2 are defined elsewhere
 
     // Calculate values
     vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0.0));
 
-    for (int i = 0; i < ShardNum; ++i) {
-        for (int k = 0; k < SourceNum; ++k) {
+    for (int i = 0; i < ShardNum; ++i)
+    {
+        for (int k = 0; k < SourceNum; ++k)
+        {
             double numerator = (V + (k == 0 ? Z1 : Z2));
             double denominator = alpha * pow(Weight[k], alpha) * (Q[i] + RTX * V);
             p[i][k] = pow(numerator / denominator, 1 / (alpha - 1));
@@ -198,20 +206,19 @@ int alorgith::Elastic()
     return OK;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////LONGEST//////////////////////////////////////////////////////////////
 
-int alorgith::Longest(vector<int> &Q, int ShardNum, vector<int> &B, vector<int> &P)
+int alorgith::Longest(int SourceNum, int ShardNum, double alpha)
 {
     // Given parameters
     vector<double> MaxNum = {3300, 3000};
     int SourceNum = 2;
     vector<double> Weight = {5, 4};
     double alpha = 0.5;
-    double RTX = 5;
-    int ShardNum = 10; // Assuming ShardNum is defined elsewhere
+
+    int ShardNum = 10;
     vector<double> Q(ShardNum); // Assuming Q is defined elsewhere
 
     // Initialize variables
@@ -222,10 +229,12 @@ int alorgith::Longest(vector<int> &Q, int ShardNum, vector<int> &B, vector<int> 
     // Sort Q in descending order and get the indices
     vector<int> I(ShardNum);
     iota(I.begin(), I.end(), 0); // Fill I with indices 0, 1, 2, ..., ShardNum - 1
-    sort(I.begin(), I.end(), [&](int i, int j) { return Q[i] > Q[j]; });
+    sort(I.begin(), I.end(), [&](int i, int j)
+         { return Q[i] > Q[j]; });
 
     // Assign values based on sorted Q
-    for (int k = 0; k < SourceNum; ++k) {
+    for (int k = 0; k < SourceNum; ++k)
+    {
         p[I[0]][k] = MaxNum[k];
         B[I[0]] += pow(Weight[k] * p[I[0]][k], alpha);
         P[k] = MaxNum[k];
@@ -233,27 +242,24 @@ int alorgith::Longest(vector<int> &Q, int ShardNum, vector<int> &B, vector<int> 
 
     // Output results or use them as needed
     return OK;
-
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////RANDOM////////////////////////////////////////////////////////////////////////////////////////
 
-int alorgith::Random(int ShardNum, vector<int> &B, vector<int> &P)
+int alorgith::Random(int ShardNum = 24,
+                     int SourceNum = 2,
+                     double alpha = 0.5,
+                     double RTX = 5,
+                     double BlockSize = 1,
+                     double BlockInterval = 1,
+                     double SlotsInterval = 1)
 {
-     // Given parameters
-    int SourceNum = 2;
+    // Given parameters
+
     vector<int> MaxNum = {3300, 3000};
     vector<int> Weight = {5, 4};
-    double alpha = 0.5;
-    double RTX = 5;
-    int ShardNum = 24;
-    double BlockSize = 1;
-    double BlockInterval = 1;
-    double SlotsInterval = 1;
 
     // Initialize variables
     vector<double> B(ShardNum, 0.0);
@@ -267,17 +273,21 @@ int alorgith::Random(int ShardNum, vector<int> &B, vector<int> &P)
     // Generate random values for A and normalize
     vector<double> A(ShardNum);
     double sumA = 0.0;
-    for (int i = 0; i < ShardNum; ++i) {
+    for (int i = 0; i < ShardNum; ++i)
+    {
         A[i] = static_cast<double>(rand()) / RAND_MAX; // Generate a random number between 0 and 1
         sumA += A[i];
     }
-    for (int i = 0; i < ShardNum; ++i) {
+    for (int i = 0; i < ShardNum; ++i)
+    {
         A[i] /= sumA; // Normalize A
     }
 
     // Calculate p, B, and P
-    for (int i = 0; i < ShardNum; ++i) {
-        for (int k = 0; k < SourceNum; ++k) {
+    for (int i = 0; i < ShardNum; ++i)
+    {
+        for (int k = 0; k < SourceNum; ++k)
+        {
             p[i][k] = MaxNum[k] * A[i];
             B[i] += pow(Weight[k] * p[i][k], alpha);
             P[k] += p[i][k];
@@ -286,12 +296,7 @@ int alorgith::Random(int ShardNum, vector<int> &B, vector<int> &P)
 
     // Output results or use them as needed
     return OK;
-
-
-
-
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -310,13 +315,29 @@ int alorgith::Random(int ShardNum, vector<int> &B, vector<int> &P)
 
 */
 
-int alorgith::resallocation(vector<int> &Q, int V)
+int alorgith::resallocation(
+    int max_iteration, // Maximum number of iterations
+    const int ShardNum,
+    const int SourceNum,
+    double tol, // Used to limit the gap between the original function and the objective function
+    double alpha,
+    int RTX,
+    int BlockSize,
+    int BlockInterval,
+    int SlotsInterval,
+    double updatestepl,
+    double updatestepg,
+    double Lk,
+    double Li,
+    double f,
+    int iter,
+    int V)
 {
 
     /*
         int main()
         {
-            vector<int> Q = {0, 0, 0, 0}; // Initialize Q vector with zeros
+
             int V = 50;                   // Set V value
 
             resallocation(Q, V);
@@ -325,30 +346,20 @@ int alorgith::resallocation(vector<int> &Q, int V)
         }
     */
 
-    const int ShardNum = 4;
-    const int SourceNum = 2;
     vector<int> MaxNum = {200, 150};
     vector<int> Weight = {5, 4};
-    double alpha = 0.5;
-    int RTX = 5;
-    int BlockSize = 10;
-    int BlockInterval = 5;
-    int SlotsInterval = 8;
+
     vector<int> B(ShardNum, 0);
     vector<int> P(SourceNum, 0);
     vector<vector<double>> p(ShardNum, vector<double>(SourceNum, 0));
     vector<double> lambda(ShardNum, 0);
     vector<double> gamma(SourceNum, 0);
-    double updatestepl = 0.1;
-    double updatestepg = 0.1;
-    double Lk = 0;
-    double Li = 0;
-    double f = 0;
-    vector<double> L_v;        // Record Lagrangian function history
-    vector<double> f_v;        // Record original function history
-    int iter = 1;              // Iteration counter
-    double tol = 1e-5;         // Used to limit the gap between the original function and the objective function
-    int max_iteration = 10000; // Maximum number of iterations
+
+    vector<double> Q(ShardNum, 0.0); // Initialize Q vector with zeros
+
+    vector<double> L_v; // Record Lagrangian function history
+    vector<double> f_v; // Record original function history
+
     vector<int> flag1(SourceNum, 0);
 
     for (int i = 0; i < ShardNum; i++)
@@ -437,29 +448,29 @@ int alorgith::resallocation(vector<int> &Q, int V)
     resallocation(Q, V);
     return 0;
 */
-int alorgith::resallocation_lagrange(vector<int> Q, int V)
+int alorgith::resallocation_lagrange(int ShardNum,
+                                     int SourceNum,
+                                     double alpha,
+                                     int RTX,
+                                     int BlockSize,
+                                     int BlockInterval,
+                                     int SlotsInterval,
+                                     double updatestepl,
+                                     double updatestepg,
+                                     double tol,
+                                     int max_iteration,
+                                     int V)
 {
     // Initialize parameters
-    int ShardNum = 4;
-    int SourceNum = 2;
     vector<int> MaxNum = {200, 150};
     vector<int> Weight = {5, 4};
-    double alpha = 0.5;
-    int RTX = 5;
-    int BlockSize = 10;
-    int BlockInterval = 5;
-    int SlotsInterval = 8;
-    double updatestepl = 0.1;
-    double updatestepg = 0.1;
-    double tol = 1e-5;
-    int max_iteration = 10000;
 
     // Define variables
     vector<int> B(ShardNum, 0);
     vector<int> P(SourceNum, 0);
     vector<vector<int>> p(ShardNum, vector<int>(SourceNum, 0));
     vector<int> flag1(SourceNum, 0);
-
+    vector<double> Q(ShardNum, 0.0); // Initialize Q vector with zeros
     // Resource allocation
     for (int i = 0; i < ShardNum; ++i)
     {
@@ -542,21 +553,23 @@ int alorgith::resallocation_lagrange(vector<int> Q, int V)
     resallocation_without_blockinterval(Q, V, ShardNum);
 */
 
-int alorgith::resallocation_without_blockinterval(vector<int> Q, int V, int ShardNum)
+int alorgith::resallocation_without_blockinterval(
+    int max_iteration,
+    int SourceNum,
+    int ShardNum,
+    double alpha,
+    int RTX,
+    int BlockSize,
+    int BlockInterval,
+    int SlotsInterval,
+    double updatestepl,
+    double updatestepg,
+    double tol,
+    int V)
 {
     // Initialize parameters
-    int SourceNum = 2;
     vector<int> MaxNum = {200, 150};
     vector<int> Weight = {5, 4};
-    double alpha = 0.5;
-    int RTX = 5;
-    int BlockSize = 10;
-    int BlockInterval = 5;
-    int SlotsInterval = 8;
-    double updatestepl = 0.1;
-    double updatestepg = 0.1;
-    double tol = 1e-5;
-    int max_iteration = 10000;
 
     // Define variables
     vector<int> B(ShardNum, 0);
@@ -564,7 +577,7 @@ int alorgith::resallocation_without_blockinterval(vector<int> Q, int V, int Shar
     vector<vector<int>> p(ShardNum, vector<int>(SourceNum, 0));
     vector<int> flag1(SourceNum, 0);
     vector<int> gamma(SourceNum, 0); // Initialize gamma vector
-
+    vector<double> Q(ShardNum, 0.0); // Initialize Q vector with zeros
     // Resource allocation
     for (int i = 0; i < ShardNum; ++i)
     {
