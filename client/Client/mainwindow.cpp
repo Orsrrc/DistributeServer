@@ -56,13 +56,29 @@ MainWindow::MainWindow(QWidget *parent)
         inputWidgets.append(optionInputWidgets);
     }
 
+
+
+
     QPushButton *btn_submmit = new QPushButton("发送",this);
+    // Connect the button's clicked signal to a slot
+    connect(btn_submmit, &QPushButton::clicked, this, &MainWindow::sendMessage);
     leftLayout->addWidget(btn_submmit);
 
 
     /////////////////////////////////////////////////////////////////////////////////
 
+    ///////////////////////////////////////////////
 
+    // Create a client socket
+    clientSocket = new QTcpSocket(this);
+    // Connect the client to the server
+    clientSocket->connectToHost("192.168.0.108", 9800);
+    message = "hello server";
+    if (!clientSocket->waitForConnected()) {
+        qDebug() << "Failed to connect to server.";
+    }
+
+    /// /////////////////////////////////////////////
 
 
 

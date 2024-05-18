@@ -19,7 +19,7 @@
 #include <QLineSeries>
 #include <QComboBox>
 #include <QLineEdit>
-
+#include <ClientSocket.h>
 namespace Ui {
 class MainWindow;
 }
@@ -34,7 +34,8 @@ public:
     QWidget* createWindow();
 
 private slots:
-    void comboBoxIndexChanged(int index) {
+    void comboBoxIndexChanged(int index)
+    {
         // Hide all labels and input widgets
         for (auto optionInputs : inputWidgets) {
             for (auto pair : optionInputs) {
@@ -80,9 +81,37 @@ private slots:
         }
     }
 
+    void sendMessage() {
+        if (clientSocket->state() == QAbstractSocket::ConnectedState) {
+            // Get text from input line edit
+            if (!message.isEmpty()) {
+                // Send message to server
+                QByteArray data = message.toUtf8();
+                clientSocket->write(data);
+                clientSocket->waitForBytesWritten();
+
+                // Receive response from server
+                if (clientSocket->waitForReadyRead()) {
+                    qDebug() << "Response from server: " << clientSocket->readAll();
+                }
+
+                // Clear input line edit after sending message
+                message = " ";
+            }
+            else {
+                qDebug() << "Message is empty.";
+            }
+        } else {
+            qDebug() << "Not connected to server.";
+        }
+    }
+
+
 private:
     Ui::MainWindow *ui;
-   QVector<QVector<QPair<QLabel*, QLineEdit*>>> inputWidgets;
+    QTcpSocket *clientSocket;
+    QString message;
+    QVector<QVector<QPair<QLabel*, QLineEdit*>>> inputWidgets;
 };
 
 #endif // MAINWINDOW_H

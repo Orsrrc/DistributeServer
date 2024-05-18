@@ -61,7 +61,7 @@ public:
         double Li = 0,
         double f = 0,
         int iter = 1, // Iteration counter
-        int V);
+        int V = 0);
     int resallocation_lagrange(int ShardNum = 4,
                                int SourceNum = 2,
                                double alpha = 0.5,
@@ -73,7 +73,7 @@ public:
                                double updatestepg = 0.1,
                                double tol = 1e-5,
                                int max_iteration = 10000,
-                               int V);
+                               int V = 0);
 
     int resallocation_without_blockinterval(int max_iteration = 10000,
                                             int SourceNum = 2,
@@ -86,7 +86,7 @@ public:
                                             double updatestepl = 0.1,
                                             double updatestepg = 0.1,
                                             double tol = 1e-5,
-                                            int V);
+                                            int V = 0);
 };
 
 #endif //__RESALLOCATEALORGITH__H_

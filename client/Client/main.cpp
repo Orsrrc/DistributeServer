@@ -7,10 +7,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
    // LoginDialog *loginDialog = new LoginDialog();
-
-
-
-
    //loginDialog->showMinimized();
 
   //  if(loginDialog->exec() == QDialog::Accepted)
@@ -18,6 +14,7 @@ int main(int argc, char *argv[])
     MainWindow mainwindow;
     mainwindow.showMaximized();
  //  }
+
 
     return a.exec();
 }
