@@ -16,7 +16,7 @@ int main()
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
-    const char *hello = "你好";
+    const char *hello = "hello";
 
     // Create socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {

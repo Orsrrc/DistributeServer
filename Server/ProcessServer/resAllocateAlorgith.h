@@ -12,11 +12,18 @@
 class alorgith
 {
 public:
-    int Top_S(int ShardNum = 10, int SourceNum = 2, double alpha = 0.5);
+    int Top_S(int ShardNum = 10,
+              int SourceNum = 2,
+              double alpha = 0.5);
 
-    int Average(int ShardNum = 10, int SourceNum = 2, double alpha = 0.5);
+    int Average(int ShardNum = 10,
+                int SourceNum = 2,
+                double alpha = 0.5);
 
-    int Dualascent(int max_iteration = 10000, double tol = 1e-5, double t_lambda = 0.1, double t_x = 0.1);
+    int Dualascent(int max_iteration = 10000,
+                   double tol = 1e-5,
+                   double t_lambda = 0.1,
+                   double t_x = 0.1);
 
     int Dualascentfl(int max_iteration = 10000,
                      double tol = 1e-5,
@@ -25,8 +32,8 @@ public:
                      double t_x_1 = 0.1, // Update step size for decision variable x1
                      double t_x_2 = 0.1  // Update step size for decision variable x2);
     );
-    int Elastic(int SourceNum = 2,
-                int ShardNum = 10, // Assuming ShardNum is defined elsewhere
+    int Elastic(int ShardNum = 10, // Assuming ShardNum is defined elsewhere
+                int SourceNum = 2,
                 double alpha = 0.5,
                 double RTX = 5, // Assuming RTX is defined elsewhere
                 double V = 0,   // Assuming V is defined elsewhere

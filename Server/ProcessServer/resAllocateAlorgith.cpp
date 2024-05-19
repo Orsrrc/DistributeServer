@@ -176,7 +176,13 @@ int alorgith::Dualascentfl(
 }
 
 //////////////////////////////////////////////////////////ELASTIC////////////////////////////////////////////////////////////////////////////////////////
-int alorgith::Elastic(int SourceNum, int ShardNum, double alpha, double RTX, double V, double Z1, double Z2)
+int alorgith::Elastic(int ShardNum,
+                      int SourceNum,
+                      double alpha,
+                      double RTX,
+                      double V,
+                      double Z1,
+                      double Z2)
 {
     // Given parameters
     vector<double> MaxNum = {3300, 3000};

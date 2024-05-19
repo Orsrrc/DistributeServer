@@ -12,82 +12,113 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 创建左右分割器
     QSplitter *splitter = new QSplitter(Qt::Horizontal, centralWidget);
+    // 设置分割器的大小
+    splitter->setSizes(QList<int>() << 200 << 600);
+    setCentralWidget(splitter);
 
-    //////////////////////////////////////////left window//////////////////////////
+    //////////////////////////////////////////left window/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     QWidget *leftWidget = new QWidget(splitter);
     QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
     leftWidget->setLayout(leftLayout);
     leftWidget->setStyleSheet("background-color: lightGray;");
 
+    ///////////////////comboBox///////////////////////////////////////////////////
+    QLabel *label = new QLabel("仿真:", this);
+    // 创建下拉框和界面
+    combo = new QComboBox(this);
+    stack = new QStackedWidget(this);
 
+    QStringList options = {"...",
+                           "Performance evaluation while varying parameter V .",
+                           "Performance comparison with baseline algorithms." ,
+                           "Performance evaluation under the continued bursty-TX injection attack against all network shards.",
+                           "Performance evaluation under the drastic bursty-TX injection attack against a single network shard."  };
+    combo->addItems(options);
 
-    QHBoxLayout *comboBoxLayout = new QHBoxLayout(leftWidget);
+    // 添加第一个界面，无输入框
+    QWidget *firstPage = new QWidget(stack);
+    stack->addWidget(firstPage);
 
-    QLabel *label = new QLabel("资源分配算法:", this);
+    for (int i = 1; i < options.size(); ++i) {
+        QWidget *page = new QWidget(stack);
+        QVBoxLayout *layout = new QVBoxLayout(page);
 
-    QComboBox *comboBox = new QComboBox(this);
-    comboBox->addItem("Top_S");
-    comboBox->addItem("Average");
-    comboBox->addItem("Dualascent");
-    comboBox->addItem("Dualascentfl");
-    comboBox->addItem("Elastic");
-    comboBox->addItem("Longest");
-    comboBox->addItem("Random");
-
-
-    comboBoxLayout->addWidget(label);
-    comboBoxLayout->addWidget(comboBox);
-    comboBoxLayout->setSpacing(0); // Set spacing to 0
-    leftLayout->addLayout(comboBoxLayout);
-
-    connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::comboBoxIndexChanged);
-
-    // Create input widgets for each option
-    for (int i = 0; i < 7; ++i) {
-        QVector<QPair<QLabel*, QLineEdit*>> optionInputWidgets;
         for (int j = 0; j < 5; ++j) {
-            QLineEdit *input = new QLineEdit(this);
-            optionInputWidgets.append(qMakePair(new QLabel(this), input));
-           leftLayout->addWidget(optionInputWidgets.back().first);
-             leftLayout->addWidget(optionInputWidgets.back().second);
-            optionInputWidgets.back().first->hide(); // Initially hide all labels
-            optionInputWidgets.back().second->hide(); // Initially hide all input widgets
+            QHBoxLayout *hLayout = new QHBoxLayout();
+            QLabel *label = new QLabel("参数" + QString::number(j + 1) + ":", page);
+            QLineEdit *lineEdit = new QLineEdit(page);
+            hLayout->addWidget(label);
+            hLayout->addWidget(lineEdit);
+            layout->addLayout(hLayout);
+            lineEdits.append(lineEdit);
         }
-        inputWidgets.append(optionInputWidgets);
+        stack->addWidget(page);
     }
+    ///////////////////////////////////////////////////////////////////////////////////
 
 
 
+    ////////////////////////////////////////////label//////////////////////////////////////////////////////
 
+    textLabel = new QLabel(this);
+    // Initialize text box content based on initial combo box selection
+    updateTextBoxContent(0);
+
+    ///////////////////////////////////////button////////////////////////////////////
     QPushButton *btn_submmit = new QPushButton("发送",this);
     // Connect the button's clicked signal to a slot
     connect(btn_submmit, &QPushButton::clicked, this, &MainWindow::sendMessage);
     leftLayout->addWidget(btn_submmit);
-
-
     /////////////////////////////////////////////////////////////////////////////////
 
-    ///////////////////////////////////////////////
 
-    // Create a client socket
-    clientSocket = new QTcpSocket(this);
-    // Connect the client to the server
-    clientSocket->connectToHost("192.168.0.108", 9800);
-    message = "hello server";
-    if (!clientSocket->waitForConnected()) {
-        qDebug() << "Failed to connect to server.";
+    ////////////////////////////connect/////////////////////////////////////////////
+    // 连接信号和槽
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            stack, &QStackedWidget::setCurrentIndex);
+
+
+    for (auto lineEdit : lineEdits) {
+        connect(lineEdit, &QLineEdit::textChanged,
+                this, &MainWindow::updateString);
     }
 
-    /// /////////////////////////////////////////////
+    // 连接信号和槽，下拉框选项改变时清空输入框内容
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::clearInputFields);
+
+
+    // Connect combo box signal to slot
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::updateTextBoxContent);
+    ///////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////Layout//////////////////////////////////////////////
+    QHBoxLayout *labelLayout = new QHBoxLayout();
+    labelLayout->addWidget(label);
+    labelLayout->addWidget(combo);
+
+    QVBoxLayout *lineEditLayout = new QVBoxLayout(this);
+    lineEditLayout->addLayout(labelLayout);
+    lineEditLayout->addWidget(stack);
+
+    leftLayout->addWidget(textLabel);
+    leftLayout->addLayout(lineEditLayout);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-    //////////////////////right window///////////////////////////////////////////////////////////////////////
+    //////////////////////right window////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     QWidget *rightWidget = new QWidget(splitter);
     QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
     rightWidget->setLayout(rightLayout);
     rightWidget->setStyleSheet("background-color: gray;");
 
+
+    ///////////////////////button////////////////////////////////////////////////////////////////////////////////////////////////
     // 创建四个按钮
     QToolBar *toolBar = new QToolBar("Toolbar", rightWidget);
     QPushButton *btn_vary_V = new QPushButton("Performance evaluation while varying parameter V");
@@ -98,7 +129,11 @@ MainWindow::MainWindow(QWidget *parent)
     toolBar->addWidget(btn_performance_comparison);
     toolBar->addWidget(btn_attack_all_shards);
     toolBar->addWidget(btn_attack_single_shard);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+    //////////////////////////////////////////////////windows//////////////////////////////////////////////////////////////////
     // 创建堆叠窗口
     QStackedWidget *stackedWidget = new QStackedWidget(rightWidget);
     QWidget *win_vary_V = createWindow();
@@ -109,24 +144,24 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget->addWidget(win_performance_comparison);
     stackedWidget->addWidget(win_attack_all_shards);
     stackedWidget->addWidget(win_attack_single_shard);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+    /// //////////////////////////////////////////////connect/////////////////////////////////////////////////////////////////////
     // 连接按钮的点击信号和堆叠窗口的切换槽函数
     connect(btn_vary_V, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(0); });
     connect(btn_performance_comparison, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(1); });
     connect(btn_attack_all_shards, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(2); });
     connect(btn_attack_single_shard, &QPushButton::clicked, [=]() { stackedWidget->setCurrentIndex(3); });
 
+    //////////////////////////////////////Layout///////////////////////////////////////////////////////////////
     // 将工具栏和堆叠窗口添加到右侧布局中
     rightLayout->addWidget(toolBar);
     rightLayout->addWidget(stackedWidget);
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-    // 设置分割器的大小
-    splitter->setSizes(QList<int>() << 200 << 600);
-
-    setCentralWidget(splitter);
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
 
