@@ -16,8 +16,6 @@
 - 组：内容对等的存储服务器集合，其 文件系统通过GlusterFS实时同步– 存储服务器：实际存储流媒体文件的 服务器，同组存储服务器互为备份
 - 跟踪服务器集群：由多台跟踪服务器 组成的集群，互为热备，负载均衡
 
-
-
 ## 服务器
 
 ### 单机服务器
@@ -38,6 +36,8 @@ Centos ubuntu 等等
 
 ### 独立服务器
 
+例如 将cpu的时间片调小
+
 ![image-20240221150102916](D:/Admin/Documents/GitHub/DistributeServer/README.assets/image-20240221150102916.png)
 
 应用服务器 处理与存储无关的功能
@@ -48,19 +48,20 @@ Centos ubuntu 等等
 
 交互性越高  时间片越短  I/O速度越快 所需时间片越长
 
-
-
 ### 分布式存储
 
 分布式 将每个模块独立出去 不单独放置于一台机器
 
 ![image-20240221150702303](D:/Admin/Documents/GitHub/DistributeServer/README.assets/image-20240221150702303.png)
 
-仲裁系统 选着某一存储主机
+- 仲裁系统（反向代理，实时监测服务器的存活、最空闲的服务器） 
 
-保证负载均衡
+  - 选中某一存储主机
 
-容灾系统 管理多级备份  热切换 主机与备份机实时同步状态 当主机损坏 则交给备份机
+  - 保证负载均衡
+
+- 容灾系统 
+  - 管理多级备份  热切换 主机与备份机实时同步状态 当主机损坏 则交给备份机
 
 ![image-20240221151206623](D:/Admin/Documents/GitHub/DistributeServer/README.assets/image-20240221151206623.png)
 
@@ -68,7 +69,11 @@ Centos ubuntu 等等
 
 ![image-20240221151306356](D:/Admin/Documents/GitHub/DistributeServer/README.assets/image-20240221151306356.png)
 
-跟踪服务器 实时跟踪存储服务器集群的状态
+跟踪服务器
+
+- 即仲裁系统
+
+ 实时跟踪存储服务器集群的状态
 
 每个组间的服务器互为镜像  可以根据业务需求 将各个组放置到不同的地区
 
@@ -160,8 +165,6 @@ GlusterFs 文件管理系统
 #### 跟踪服务器通信报文
 
 ##### 请求加入
-
-
 
 ![image-20240221155456940](D:/Admin/Documents/GitHub/DistributeServer/README.assets/image-20240221155456940.png)
 
